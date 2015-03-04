@@ -1,0 +1,17 @@
+ASKED Questions
+
+NOT ASKED
+11) Do I have to add DAC to activate_project.sh manually?
+2) There should be separate defines for each sub-arch: z.B., Architecture_STM32L1xx and Architecture_STM32L152RC for uC-specific things like gpio banks or more periphs.
+
+Need to finish
+2) mutex thing not working
+3) Config struct not right
+
+
+Recent thought processes
+- don't use TTC_Timer for example. Start with STD_Periph and use directly.
+- get proximity sensor working
+- UART
+- finish gpio transition
+

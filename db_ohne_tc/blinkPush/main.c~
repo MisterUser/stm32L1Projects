@@ -1,0 +1,183 @@
+#include <stm32l1xx.h>
+#include <stm32l1xx_rcc.h>
+#include <stm32l1xx_gpio.h>
+#include <stm32l1xx_usart.h>
+
+
+void Delay(uint32_t nTime);
+int putchar (uint16_t c);
+uint16_t getchar (void);
+
+
+
+
+
+
+int main(void){
+
+   GPIO_InitTypeDef  GPIO_InitStructure;
+   
+   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB | RCC_AHBPeriph_GPIOA, ENABLE);
+   RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+   
+
+   //leds
+   GPIO_StructInit (& GPIO_InitStructure );
+   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
+   GPIO_Init (GPIOB , & GPIO_InitStructure );
+
+   //pushbutton
+   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+   GPIO_Init (GPIOA , & GPIO_InitStructure );
+   
+   
+   
+   //GPIO info for TX of USART1
+   
+   GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
+   
+   
+   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_400KHz;
+   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+   //GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+   GPIO_Init (GPIOA , & GPIO_InitStructure );
+   
+   
+   
+   //info for RX of USART1
+   
+   GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+   
+   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+   //GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+   GPIO_Init (GPIOA , & GPIO_InitStructure );
+   
+   USART_DeInit(USART1);
+   //Initialize the USART
+   USART_InitTypeDef USART_InitStructure ;
+   USART_StructInit(&USART_InitStructure);
+   USART_InitStructure.USART_BaudRate   = 9600;
+   USART_InitStructure.USART_WordLength = USART_WordLength_9b;
+   USART_InitStructure.USART_StopBits   = USART_StopBits_1;
+   USART_InitStructure.USART_Parity	= USART_Parity_No;
+   USART_InitStructure.USART_Mode 	= USART_Mode_Rx | USART_Mode_Tx;
+   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+   USART_Init(USART1, &USART_InitStructure);
+   USART_Cmd(USART1 , ENABLE );
+
+   
+   
+ 
+   //Set System Clock to interrupt every ms.
+   if ( SysTick_Config ( SystemCoreClock / 1000) )
+	while (1); //If fails, hang in while loop
+
+   static int ledval = 0;
+   static uint16_t userVal = 'U';
+   putchar(userVal);
+   
+   while (1) {
+	
+	
+	
+	//Toggle blue LED
+	GPIO_WriteBit(GPIOB , GPIO_Pin_6 , ( ledval ) ? Bit_SET : Bit_RESET );
+	//Toggle variable
+        ledval = 1 - ledval ;
+
+        //check if pushbutton is pressed
+	if(GPIO_ReadInputDataBit(GPIOA , GPIO_Pin_0 )){
+		//if so, turn green LED on
+		GPIO_WriteBit(GPIOB , GPIO_Pin_7, Bit_SET);
+		
+	}
+	else
+	{
+		//if not, turn green LED off
+		GPIO_WriteBit(GPIOB , GPIO_Pin_7, Bit_RESET);
+	}
+	
+	
+	//test USART
+	
+	/*
+	putchar('\n');
+	putchar('\r');*/
+	
+	if ( USART_GetFlagStatus(USART1 , USART_FLAG_RXNE ) == Bit_SET)
+	{
+	   userVal = getchar();
+	   switch(userVal){
+	   case 'U': putchar('S');
+	   break;
+	   case 'S': putchar('A');
+	   break;
+	   case 'A': putchar('R');
+	   break;
+	   case 'R': putchar('T');
+	   break;
+	   case 'T': putchar('1');
+	   break;
+	   case '1': putchar('U');
+	   break;
+   	   default: putchar('B');
+	   break;
+	   }
+	}
+	
+	Delay(150);	
+   }
+
+
+
+
+}
+
+static __IO uint32_t TimingDelay;
+
+void Delay(uint32_t delayMS){
+   TimingDelay = delayMS;
+   while ( TimingDelay != 0);
+}
+
+void SysTick_Handler (void){
+if ( TimingDelay != 0x00)
+TimingDelay --;
+}
+
+int putchar (uint16_t c){
+//while ( USART_GetFlagStatus(USART1 , USART_FLAG_TXE ) == RESET);
+
+//USART1->DR = (c & 0xff);
+USART_SendData(USART1, c);
+
+
+
+return 0;
+}
+
+uint16_t getchar (void){
+
+//return USART1->DR & 0xff;
+return USART_ReceiveData(USART1);
+}
+
+
+#ifdef USE_FULL_ASSERT
+
+void assert_failed(uint8_t* file, uint32_t line)
+{
+	while(1);
+}
+
+#endif

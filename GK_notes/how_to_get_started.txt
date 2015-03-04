@@ -1,0 +1,36 @@
+1) copy STM32-Template
+2) make sure the following files are included:
+	- startup_stm32l1xx.c
+	- STM32L10x_256k_32k_flash.ld
+	- stm32l1xx_conf.h (in the project folder)
+	- system_stm32l1xx.o
+3) make sure that
+	- StdPeriph_Lib
+	- gcc-arm-none-eabi toolchain
+	- stlink (github.com/texane/stlink)
+    are in the Tools_and_Libs folder
+4) sudo cp 49-stlinkv2.rules /etc/udev/rules.d/  #found in stlink folder
+   #which creates /dev/stlinkv2_1
+   then reboot or
+	$ udevadm control --reload-rules
+	$ udevadm trigger
+5) install:
+	-libusb-1.0
+	-pkg-config
+	-autoconf
+
+6) make stlink 
+	-./autogen.sh
+	-./configure
+	-make
+
+7) run st-util #in stlink directory
+
+8) make the project.elf via Makefiles
+
+9) $ arm-none-eabi-gdb  program.elf 
+	(gdb) target extended-remote :4242
+	(gdb) load
+	(gdb) continue
+
+
