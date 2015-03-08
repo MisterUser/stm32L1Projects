@@ -25,4 +25,5 @@ main.o: main.c \
  /home/g/workspace/stm32_projects/Tools_and_Libs/STM32L1xx_StdPeriph_Lib_V1.2.0/Libraries/STM32L1xx_StdPeriph_Driver/inc/stm32l1xx_tim.h \
  /home/g/workspace/stm32_projects/Tools_and_Libs/STM32L1xx_StdPeriph_Lib_V1.2.0/Libraries/STM32L1xx_StdPeriph_Driver/inc/stm32l1xx_usart.h \
  /home/g/workspace/stm32_projects/Tools_and_Libs/STM32L1xx_StdPeriph_Lib_V1.2.0/Libraries/STM32L1xx_StdPeriph_Driver/inc/stm32l1xx_wwdg.h \
- /home/g/workspace/stm32_projects/Tools_and_Libs/STM32L1xx_StdPeriph_Lib_V1.2.0/Libraries/STM32L1xx_StdPeriph_Driver/inc/misc.h
+ /home/g/workspace/stm32_projects/Tools_and_Libs/STM32L1xx_StdPeriph_Lib_V1.2.0/Libraries/STM32L1xx_StdPeriph_Driver/inc/misc.h \
+ implementations/usart_polling.h

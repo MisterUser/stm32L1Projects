@@ -1,15 +1,9 @@
 #include <stm32l1xx.h>
 #include <stm32l1xx_rcc.h>
 #include <stm32l1xx_gpio.h>
-
+#include "implementations/usart_polling.h"
+ 
 void Delay(uint32_t nTime);
-
-//int i = 0;
-//int off = 5;
-
-//void inc(void){
-//  i += off;
-//}
 
 
 int main(void){
@@ -17,17 +11,21 @@ int main(void){
 
   //Enable Peripheral Clocks
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); 
+  
   //Configure Pins
   GPIO_StructInit(& GPIO_InitStructure );
-   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
-   GPIO_Init(GPIOB , & GPIO_InitStructure );
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
+  GPIO_Init(GPIOB , & GPIO_InitStructure );
+
+  usart_polling_init();
+
   //Configure SysTick Timer
- //Set System Clock to interrupt every ms.
-   if ( SysTick_Config ( SystemCoreClock / 1000) )
+  //Set System Clock to interrupt every ms.
+  if ( SysTick_Config ( SystemCoreClock / 1000) )
 	while (1); //If fails, hang in while loop 
 
   while (1) {
@@ -37,6 +35,7 @@ int main(void){
     GPIO_WriteBit(GPIOB,GPIO_Pin_7,(ledval)? Bit_SET : Bit_RESET);
     ledval = 1-ledval;
     
+    usart_polling_putchar('G');
     Delay(250); //wait 250ms
   }
 }

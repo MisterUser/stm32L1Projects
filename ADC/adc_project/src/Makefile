@@ -8,7 +8,7 @@ ASFLAGS = -g
 # object files
 
 OBJS=  $(STARTUP) main.o
-OBJS+= stm32l1xx_gpio.o stm32l1xx_rcc.o
+OBJS+= stm32l1xx_gpio.o stm32l1xx_rcc.o stm32l1xx_usart.o usart_polling.o
 
 # include common make file
 

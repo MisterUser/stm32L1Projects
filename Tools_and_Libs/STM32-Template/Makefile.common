@@ -2,6 +2,7 @@
 
 ELF=$(notdir $(CURDIR)).elf                    
 
+
 # Tool path
 
 TOOLROOT=/home/g/workspace/stm32_projects/Tools_and_Libs/GNU_sourcery_toolchain_arm_05_2014/bin
@@ -43,6 +44,9 @@ vpath %.c $(TEMPLATEROOT)/Library/ff9/src
 vpath %.c $(TEMPLATEROOT)/Library/ff9/src/option
 vpath %.c $(TEMPLATEROOT)/Library
 
+# Search path for implementations
+vpath %.c $(TEMPLATEROOT)/src/implementations
+
 #  Processor specific
 
 PTYPE = STM32L10x_256k_32k
@@ -59,6 +63,7 @@ CFLAGS+= -mcpu=cortex-m3 -mthumb
 CFLAGS+= -I$(TEMPLATEROOT) -I$(DEVICE) -I$(CORE) -I$(PERIPH)/inc -I.
 CFLAGS+= -D$(PTYPE) -DUSE_STDPERIPH_DRIVER $(FULLASSERT)
 CFLAGS+= -I$(TEMPLATEROOT)/Library/ff9/src -I$(TEMPLATEROOT)/Library
+CFLAGS+= -I$(TEMPLATEROOT)/src/implementations
 
 # Build executable 
 
