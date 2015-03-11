@@ -2,6 +2,7 @@
 #define USART_INT_W_Q_H
 
 #include <stm32l1xx_usart.h>
+#include <misc.h>
 
 //-------Defines----------//
 #define USART1_INDEX 1
@@ -25,8 +26,8 @@ static USART_Queue UART1_TXq;
 //--------Functions-----------//
 //public
 void usart_int_and_q_init(); 
-int putchar (uint16_t c);
-uint16_t getchar (void);
+int usart_w_interrupt_putchar(uint16_t c);
+uint16_t usart_w_interrupt_getchar(void);
 int gk_USART_RX_QueueEmpty();
 
 //private

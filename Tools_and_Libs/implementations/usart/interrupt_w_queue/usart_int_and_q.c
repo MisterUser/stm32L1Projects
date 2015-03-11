@@ -62,17 +62,12 @@ void usart_int_and_q_init()
    USART_InitStructure.USART_Parity     = USART_Parity_No;
    USART_InitStructure.USART_Mode       = USART_Mode_Rx | USART_Mode_Tx;
    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_RTS_CTS;
+   //USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
    USART_Init(USART1, &USART_InitStructure);
 
    USART_Cmd(USART1, ENABLE);
 
    //-----------------------Interrupts------------------------//
-   //Interrupt init
-   USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-   USART_ClearITPendingBit(USART1, USART_IT_TXE);
-
-   USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
-   USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
 
    //Enable NVIC interrupt channel for USART
    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
@@ -84,6 +79,13 @@ void usart_int_and_q_init()
    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
    NVIC_Init(&NVIC_InitStructure);
 
+   //Interrupt init
+   USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+//   USART_ClearITPendingBit(USART1, USART_IT_TXE); <- This is not a valid parameter!!!
+
+   USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
+   USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+
    //enable nRTS -> makes RX available
    GPIO_WriteBit(GPIOA, GPIO_Pin_12, Bit_RESET);
     
@@ -93,7 +95,7 @@ void usart_int_and_q_init()
 
 }//end usart_int_and_q_init()
  
-int usart_w_interrupt_putchar (uint16_t c)
+int usart_w_interrupt_putchar(uint16_t c)
 {
     while (! Enqueue (& UART1_TXq, c));
     if (! TxPrimed) {
@@ -104,7 +106,7 @@ int usart_w_interrupt_putchar (uint16_t c)
     return 0;
 }//end putchar()
 
-uint16_t usart_w_interrupt_getchar (void)
+uint16_t usart_w_interrupt_getchar(void)
 {
     uint8_t data;
     while (! Dequeue(& UART1_RXq , &data));
@@ -166,7 +168,7 @@ static int QueueAvail ( USART_Queue *q)
 //-------------END Queue Functions--------------------------//
 void USART1_IRQHandler(void)
 {
-    if( USART_GetITStatus (USART1 , USART_IT_RXNE ) != RESET)
+    if(USART_GetITStatus(USART1, USART_IT_RXNE ) != RESET)
     {
         uint8_t data;
 
@@ -183,55 +185,55 @@ void USART1_IRQHandler(void)
         if ( QueueAvail (& UART1_RXq ) > HIGH_WATER )
 	GPIO_WriteBit(GPIOA, GPIO_Pin_12 , Bit_SET);
     }
-    if( USART_GetITStatus (USART1 , USART_IT_TXE ) != RESET)
+    else if( USART_GetITStatus (USART1 , USART_IT_TXE ) != RESET)
     {
         uint8_t data;
         // Write one byte to the transmit data register
-        if ( Dequeue (& UART1_TXq , &data))
+        if (Dequeue(&UART1_TXq, &data))
         {
-            USART_SendData (USART1 , data);
+            USART_SendData(USART1, data); //This clears the TXE interrupt
         }
         else
         {
             // if we have nothing to send , disable the interrupt
             // and wait for a kick
-            USART_ITConfig (USART1 , USART_IT_TXE , DISABLE );
+            USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
             TxPrimed = 0;
         }
     }
-    if(USART_GetITStatus (USART1 , USART_IT_PE ) != RESET)
+    else if(USART_GetITStatus (USART1 , USART_IT_PE ) != RESET)
     {
         //Parity Error
     }
-    if(USART_GetITStatus (USART1 , USART_IT_TC ) != RESET)
+    else if(USART_GetITStatus (USART1 , USART_IT_TC ) != RESET)
     {
         // Transmission Complete
     }
-    if(USART_GetITStatus (USART1 , USART_IT_IDLE ) != RESET)
+    else if(USART_GetITStatus (USART1 , USART_IT_IDLE ) != RESET)
     {
         // Idle Line Detected
     }
-    if(USART_GetITStatus (USART1 , USART_IT_LBD ) != RESET)
+    else if(USART_GetITStatus (USART1 , USART_IT_LBD ) != RESET)
     {
         // Break Flag
     }
-    if(USART_GetITStatus (USART1 , USART_IT_CTS ) != RESET)
+    else if(USART_GetITStatus (USART1 , USART_IT_CTS ) != RESET)
     {
         // CTS Flag
     }
-    if(USART_GetITStatus (USART1 , USART_IT_ERR ) != RESET)
+    else if(USART_GetITStatus (USART1 , USART_IT_ERR ) != RESET)
     {
         // Error
     }
-    if(USART_GetITStatus (USART1 , USART_IT_ORE ) != RESET)
+    else if(USART_GetITStatus (USART1 , USART_IT_ORE ) != RESET)
     {
         // Overrun Error
     }
-    if(USART_GetITStatus (USART1 , USART_IT_NE ) != RESET)
+    else if(USART_GetITStatus (USART1 , USART_IT_NE ) != RESET)
     {
         // Noise Flag
     }
-    if(USART_GetITStatus (USART1 , USART_IT_FE ) != RESET)
+    else if(USART_GetITStatus (USART1 , USART_IT_FE ) != RESET)
     {
         // Framing Error
     }
