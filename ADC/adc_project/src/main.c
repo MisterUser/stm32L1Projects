@@ -2,6 +2,7 @@
 #include <stm32l1xx_rcc.h>
 #include <stm32l1xx_gpio.h>
 #include "implementations/usart_int_and_q.h"
+#include "implementations/adc_single_conv.h"
  
 void Delay(uint32_t nTime);
 
@@ -22,16 +23,23 @@ int main(void){
   GPIO_Init(GPIOB , & GPIO_InitStructure );
 
   usart_int_and_q_init();
+  adc_single_conv_init();
 
   //Configure SysTick Timer
   //Set System Clock to interrupt every ms.
-  if(SysTick_Config(SystemCoreClock / 32000))
+  if(SysTick_Config(SystemCoreClock / 1000))
 	while (1); //If fails, hang in while loop 
 
   char userVal;
+  uint16_t sampleVal;
+  uint16_t bitOfResult;
+  uint16_t mask;
+  uint16_t sampleBit;
+
 
   while (1) {
     static int ledval = 0;
+    
 
     if(!gk_USART_RX_QueueEmpty())
     {
@@ -52,8 +60,41 @@ int main(void){
     else
     {
        //usart_w_interrupt_putchar('x');
+	//if( ((ADC_TypeDef*)ADC1)->SR>>1 & (uint32_t)1)
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 1, ADC_SampleTime_48Cycles);
+	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_RCNR) == 1)
+	{
+	   ADC_ClearFlag(ADC1,ADC_FLAG_OVR);
+	}
+        ADC_SoftwareStartConv(ADC1); 
+	//while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);
+
+	//{
+	   sampleVal = ADC_GetConversionValue(ADC1);
+           usart_w_interrupt_putchar((char)sampleVal);
+	/*}
+	else
+	{
+           usart_w_interrupt_putchar('x');
+	}*/
+	/*bitOfResult = 15;
+	while(bitOfResult >= 0)
+	{
+	   mask = (1 << bitOfResult);
+	   sampleBit = (sampleVal & mask);  
+	   if(sampleBit > 0)
+	   {
+	   	usart_w_interrupt_putchar('1');
+	   }
+	   else
+	   {
+		usart_w_interrupt_putchar('0');
+	   }
+	   bitOfResult--;
+	}
+	*/
+	   
     }
-    
     Delay(250); //wait 250ms
   }
 }

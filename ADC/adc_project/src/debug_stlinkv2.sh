@@ -18,10 +18,10 @@ END_OF_SCRIPT
   echo "missing gdb start-script '`pwd`/$Script1'"
 fi
 
-killall -9 --wait st-util
-st-util >st-util.log 2>&1 &
-sleep 1
+#killall -9 --wait st-util
+#st-util >st-util.log 2>&1 &
+#sleep 1
 arm-none-eabi-gdb "$1" -x $Script1
-killall -9 --wait st-util
+#killall -9 --wait st-util
 
 #break Assert_Halt_EC

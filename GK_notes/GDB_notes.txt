@@ -24,3 +24,11 @@ OR
 To see value of variable:
 (gdb) p LogicalIndex 
 $1 = 3 '\003'
+
+Show same register value after each step
+display /wt *0x40012704
+
+Show value at memory location
+p /wt *0x40012704
+x /wt 0x40012704
+

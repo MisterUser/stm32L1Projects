@@ -1,5 +1,9 @@
 
 target extended-remote :4242
 load
-break Assert_Halt_EC
-
+b main.c:43
+display /wt 0x40012458
+display /wt 0x40012440
+display /wt 0x40012408
+display /wt 0x40012404
+display /wt 0x40012400

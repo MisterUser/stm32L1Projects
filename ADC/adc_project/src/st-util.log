@@ -1,239 +1,1 @@
-2015-03-04T20:48:52 INFO src/stlink-common.c: Loading device parameters....
-2015-03-04T20:48:52 INFO src/stlink-common.c: Device connected is: L1 Medium-Plus-density device, id 0x10006427
-2015-03-04T20:48:52 INFO src/stlink-common.c: SRAM size: 0x8000 bytes (32 KiB), Flash: 0x40000 bytes (256 KiB) in pages of 256 bytes
-2015-03-04T20:48:52 INFO gdbserver/gdb-server.c: Chip ID is 00000427, Core ID is  2ba01477.
-2015-03-04T20:48:52 INFO gdbserver/gdb-server.c: Target voltage is 2905 mV.
-2015-03-04T20:48:52 INFO gdbserver/gdb-server.c: Listening at *:4242...
-2015-03-04T20:48:53 INFO gdbserver/gdb-server.c: GDB connected.
-2015-03-04T20:48:54 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134217728 (0x8000000)
-Flash page at addr: 0x08000000 erased2015-03-04T20:48:54 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:54 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:54 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:55 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:55 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134217984 (0x8000100)
-
-
-Flash page at addr: 0x08000100 erased2015-03-04T20:48:55 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:55 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:55 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:55 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134218240 (0x8000200)
-
-
-Flash page at addr: 0x08000200 erased2015-03-04T20:48:55 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:55 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:55 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:55 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134218496 (0x8000300)
-
-
-Flash page at addr: 0x08000300 erased2015-03-04T20:48:55 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:55 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:55 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:55 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134218752 (0x8000400)
-
-
-Flash page at addr: 0x08000400 erased2015-03-04T20:48:55 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:55 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:55 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:55 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134219008 (0x8000500)
-
-
-Flash page at addr: 0x08000500 erased2015-03-04T20:48:55 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:55 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:55 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:55 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134219264 (0x8000600)
-
-
-Flash page at addr: 0x08000600 erased2015-03-04T20:48:55 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:55 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:55 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:55 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134219520 (0x8000700)
-
-
-Flash page at addr: 0x08000700 erased2015-03-04T20:48:55 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:55 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:55 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:55 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134219776 (0x8000800)
-
-
-Flash page at addr: 0x08000800 erased2015-03-04T20:48:55 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:55 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:55 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:55 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134220032 (0x8000900)
-
-
-Flash page at addr: 0x08000900 erased2015-03-04T20:48:55 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:55 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:55 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:55 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:55 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134220288 (0x8000a00)
-
-
-Flash page at addr: 0x08000a00 erased2015-03-04T20:48:56 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:56 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:56 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:56 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134220544 (0x8000b00)
-
-
-Flash page at addr: 0x08000b00 erased2015-03-04T20:48:56 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:56 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:56 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:56 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134220800 (0x8000c00)
-
-
-Flash page at addr: 0x08000c00 erased2015-03-04T20:48:56 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:56 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:56 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:56 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134221056 (0x8000d00)
-
-
-Flash page at addr: 0x08000d00 erased2015-03-04T20:48:56 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:56 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:56 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:56 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134221312 (0x8000e00)
-
-
-Flash page at addr: 0x08000e00 erased2015-03-04T20:48:56 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:56 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:56 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:56 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134221568 (0x8000f00)
-
-
-Flash page at addr: 0x08000f00 erased2015-03-04T20:48:56 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:56 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:56 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:56 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134221824 (0x8001000)
-
-
-Flash page at addr: 0x08001000 erased2015-03-04T20:48:56 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:56 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:56 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:56 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134222080 (0x8001100)
-
-
-Flash page at addr: 0x08001100 erased2015-03-04T20:48:56 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:56 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:56 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:56 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134222336 (0x8001200)
-
-
-Flash page at addr: 0x08001200 erased2015-03-04T20:48:56 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:56 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:56 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:56 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134222592 (0x8001300)
-
-
-Flash page at addr: 0x08001300 erased2015-03-04T20:48:56 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:56 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:56 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:57 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:57 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134222848 (0x8001400)
-
-
-Flash page at addr: 0x08001400 erased2015-03-04T20:48:57 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:57 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:57 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:57 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134223104 (0x8001500)
-
-
-Flash page at addr: 0x08001500 erased2015-03-04T20:48:57 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:57 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:57 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:57 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134223360 (0x8001600)
-
-
-Flash page at addr: 0x08001600 erased2015-03-04T20:48:57 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:57 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:57 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:57 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134223616 (0x8001700)
-
-
-Flash page at addr: 0x08001700 erased2015-03-04T20:48:57 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:57 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:57 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:57 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134223872 (0x8001800)
-
-
-Flash page at addr: 0x08001800 erased2015-03-04T20:48:57 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:57 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:57 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:57 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134224128 (0x8001900)
-
-
-Flash page at addr: 0x08001900 erased2015-03-04T20:48:57 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:57 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:57 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:57 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134224384 (0x8001a00)
-
-
-Flash page at addr: 0x08001a00 erased2015-03-04T20:48:57 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:57 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:57 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:57 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134224640 (0x8001b00)
-
-
-Flash page at addr: 0x08001b00 erased2015-03-04T20:48:57 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:57 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:57 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:48:57 INFO src/stlink-common.c: Attempting to write 256 (0x100) bytes to stm32 address: 134224896 (0x8001c00)
-
-
-Flash page at addr: 0x08001c00 erased2015-03-04T20:48:57 INFO src/stlink-common.c: Finished erasing 1 pages of 256 (0x100) bytes
-2015-03-04T20:48:57 INFO src/stlink-common.c: Starting Half page flash write for STM32L core id
-2015-03-04T20:48:57 INFO src/stlink-common.c: Successfully loaded flash loader in sram
-2015-03-04T20:48:58 INFO src/stlink-common.c: Starting verification of write complete
-2015-03-04T20:48:58 INFO src/stlink-common.c: Flash written and verified! jolly good!
-2015-03-04T20:49:02 ERROR gdbserver/gdb-server.c: cannot recv: -2
-2015-03-04T20:49:02 INFO gdbserver/gdb-server.c: Listening at *:4242...
+./debug_stlinkv2.sh: line 22: st-util: command not found
