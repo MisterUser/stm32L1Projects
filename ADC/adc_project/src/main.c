@@ -32,7 +32,7 @@ int main(void){
 
   char userVal;
   uint16_t sampleVal;
-  uint16_t bitOfResult;
+  int bitOfResult;
   uint16_t mask;
   uint16_t sampleBit;
 
@@ -59,40 +59,40 @@ int main(void){
     }
     else
     {
-       //usart_w_interrupt_putchar('x');
 	//if( ((ADC_TypeDef*)ADC1)->SR>>1 & (uint32_t)1)
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 1, ADC_SampleTime_48Cycles);
-	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_RCNR) == 1)
-	{
-	   ADC_ClearFlag(ADC1,ADC_FLAG_OVR);
-	}
-        ADC_SoftwareStartConv(ADC1); 
-	//while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);
+	
+	/* Wait until the ADC1 is ready */
+	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_ADONS) == RESET);
 
+	//while(ADC_GetFlagStatus(ADC1,ADC_FLAG_RCNR) == 1)
 	//{
-	   sampleVal = ADC_GetConversionValue(ADC1);
-           usart_w_interrupt_putchar((char)sampleVal);
-	/*}
-	else
-	{
-           usart_w_interrupt_putchar('x');
-	}*/
-	/*bitOfResult = 15;
+	//   ADC_ClearFlag(ADC1,ADC_FLAG_OVR);
+	//}
+        
+	ADC_SoftwareStartConv(ADC1); 
+	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);
+
+	
+	sampleVal = ADC_GetConversionValue(ADC1);
+        //usart_w_interrupt_putchar((char)sampleVal);
+	
+
+	bitOfResult = 11;
 	while(bitOfResult >= 0)
 	{
-	   mask = (1 << bitOfResult);
-	   sampleBit = (sampleVal & mask);  
-	   if(sampleBit > 0)
+	   //mask = (1 << bitOfResult);
+	   //sampleBit = (sampleVal & mask);  
+	   if((uint16_t)(sampleVal >> bitOfResult)&(uint16_t)1)
 	   {
-	   	usart_w_interrupt_putchar('1');
+	   	usart_w_interrupt_putchar((char)'1');
 	   }
 	   else
 	   {
-		usart_w_interrupt_putchar('0');
+		usart_w_interrupt_putchar((char)'0');
 	   }
 	   bitOfResult--;
 	}
-	*/
+	usart_w_interrupt_putchar('\n');	
 	   
     }
     Delay(250); //wait 250ms
@@ -102,14 +102,16 @@ int main(void){
 //Timer code
 static __IO uint32_t TimingDelay ;
 
-void Delay( uint32_t nTime ){
+void Delay(uint32_t nTime)
+{
   TimingDelay = nTime ;
-  while ( TimingDelay != 0);
+  while(TimingDelay != 0);
 }
 
-void SysTick_Handler (void){
-  if ( TimingDelay != 0x00)
-  TimingDelay --;
+void SysTick_Handler(void)
+{
+  if(TimingDelay != 0x00)
+  TimingDelay--;
 }
 
 
