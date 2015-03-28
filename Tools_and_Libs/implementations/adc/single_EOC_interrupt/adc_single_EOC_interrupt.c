@@ -1,5 +1,7 @@
 #include "adc_single_EOC_interrupt.h"
 
+uint16_t sampleVal;
+uint8_t newSampleFlag;
 void adc_single_EOC_interrupt_init()
 {
 
@@ -40,8 +42,11 @@ void adc_single_EOC_interrupt_init()
    TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
 
    //Internal High Speed Oscillator = 16,000,000 = 16MHz
-   TIM_TimeBaseStructure.TIM_Prescaler = HSI_VALUE/1000; // 16,000,000/1,000 = 16,000 Prescalar
-   TIM_TimeBaseStructure.TIM_Period = 1000; // 0..999
+   //TIM_TimeBaseStructure.TIM_Prescaler = HSI_VALUE/1000; // 16,000,000/1,000 = 16,000 Prescalar
+
+   //Actually using MSI @2.097 MHz = 2,097,000 cycles/s -> 2,000 cycles/ms
+   TIM_TimeBaseStructure.TIM_Prescaler = 2000; //after 1ms (2,000cycles), timer increments
+   TIM_TimeBaseStructure.TIM_Period = 250; // 0..999 * 1ms = 1s -> 250=.25ms
    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up ;
    TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
    
@@ -60,6 +65,11 @@ void adc_single_EOC_interrupt_init()
    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
    NVIC_Init(&NVIC_InitStructure);
    
+   NVIC_InitStructure.NVIC_IRQChannel = ADC1_IRQn;
+   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
+   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+   NVIC_Init(&NVIC_InitStructure);
    //------------------------ADC--------------------------// 
    /* Wait until ADC + Temp sensor start */
    uint16_t T_StartupTimeDelay = 1024;
@@ -92,10 +102,12 @@ void adc_single_EOC_interrupt_init()
    ADC_EOCOnEachRegularChannelCmd(ADC1,ENABLE);
    //ADC_BankSelection(ADC1,ADC_Bank_A);
    
+   ADC_ITConfig(ADC1,ADC_IT_EOC,ENABLE);
    ADC_Cmd(ADC1, ENABLE);
    
 
-   
+   sampleVal=0x0f0f;
+   newSampleFlag=0; 
 }
 
 void TIM3_IRQHandler(void)
@@ -104,4 +116,14 @@ void TIM3_IRQHandler(void)
     GPIO_WriteBit(GPIOB,GPIO_Pin_6,(tim_LED_val)? Bit_SET : Bit_RESET);
     tim_LED_val = 1-tim_LED_val;
     TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
+}
+
+void ADC1_IRQHandler(void)
+{
+   if(ADC_GetITStatus(ADC1,ADC_IT_EOC) != RESET)
+   {
+	sampleVal = ADC_GetConversionValue(ADC1);	
+	newSampleFlag=1;
+	ADC_ClearITPendingBit(ADC1,ADC_IT_EOC);
+   }
 }

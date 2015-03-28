@@ -6,7 +6,8 @@
 #include "implementations/adc_single_EOC_interrupt.h"
  
 void Delay(uint32_t nTime);
-
+extern uint16_t sampleVal;
+extern uint8_t newSampleFlag;
 
 int main(void){
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -41,7 +42,7 @@ int main(void){
 	while (1); //If fails, hang in while loop 
 
   char userVal;
-  uint16_t sampleVal=0x0f0f;
+  //uint16_t sampleVal=0x0f0f; -> w/ interrupt, move sampleVal to adc file
   int bitOfResult;
 
   while (1) {
@@ -56,6 +57,7 @@ int main(void){
        GPIO_WriteBit(GPIOB,GPIO_Pin_7,(ledval)? Bit_SET : Bit_RESET);
        ledval = 1-ledval;
        usart_w_interrupt_putchar('\n');
+       usart_w_interrupt_putchar('\r');
        usart_w_interrupt_putchar('R');
        usart_w_interrupt_putchar('c');      
        usart_w_interrupt_putchar('v');
@@ -63,12 +65,15 @@ int main(void){
        usart_w_interrupt_putchar(':');
        usart_w_interrupt_putchar(userVal);
        usart_w_interrupt_putchar('\n');
+       usart_w_interrupt_putchar('\r');
     }
-    else
+    if(newSampleFlag)
     {
-	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);
-
-	sampleVal = ADC_GetConversionValue(ADC1);
+	newSampleFlag=0; //set by ADC1_IRQ_Handler()
+	//The following two lines are if the ADC doesn't have EOC interrupt enables
+	//  W/o the interrupt, it must poll the EOC flag before it gets the conversion value
+	//while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);
+	//sampleVal = ADC_GetConversionValue(ADC1); <--now done in ADC1_IRQ_Handler()
 
 	bitOfResult = 11;
 	while(bitOfResult >= 0)
@@ -83,8 +88,10 @@ int main(void){
 	   }
 	   bitOfResult--;
 	}
-	usart_w_interrupt_putchar('\n');	
+	//usart_w_interrupt_putchar('\n');	
+	usart_w_interrupt_putchar('\r');	
     }
+    Delay(10); //wait 10ms
   }
 }
 
