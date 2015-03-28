@@ -14,6 +14,8 @@ void usart_int_and_q_init()
    //Initialize TX of USART1 - PA9
    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
 
+   GPIO_StructInit(&GPIO_InitStructure);
+
    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;
@@ -22,6 +24,8 @@ void usart_int_and_q_init()
 
    //Initialize RX of USART1 - PA10
    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+
+   GPIO_StructInit(&GPIO_InitStructure);
 
    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
@@ -32,6 +36,8 @@ void usart_int_and_q_init()
    //Initialize CTS pin - PA11
    GPIO_PinAFConfig(GPIOA, GPIO_PinSource11, GPIO_AF_USART1); //set pins to AF
    
+   GPIO_StructInit(&GPIO_InitStructure);
+
    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;
@@ -40,6 +46,8 @@ void usart_int_and_q_init()
 
    //Initialize RTS pin - PA12
    GPIO_PinAFConfig(GPIOA, GPIO_PinSource12, GPIO_AF_USART1); //set pins to AF
+
+   GPIO_StructInit(&GPIO_InitStructure);
 
    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;

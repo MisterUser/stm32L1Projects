@@ -1,9 +1,8 @@
 #include <stm32l1xx.h>
 #include <stm32l1xx_rcc.h>
 #include <stm32l1xx_gpio.h>
-#include <stm32l1xx_tim.h>
 #include "implementations/usart_int_and_q.h"
-#include "implementations/adc_single_EOC_interrupt.h"
+#include "implementations/adc_single_conv.h"
  
 void Delay(uint32_t nTime);
 
@@ -14,26 +13,17 @@ int main(void){
   //Enable Peripheral Clocks
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); 
   
-  //Configure Pins - PB7 for USART RX LED
-  GPIO_StructInit(&GPIO_InitStructure);
+  //Configure Pins
+  GPIO_StructInit(& GPIO_InitStructure );
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-  //Configure Pins - PB6 for Timer LED
-  GPIO_StructInit(&GPIO_InitStructure);
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  GPIO_Init(GPIOB , & GPIO_InitStructure );
 
   usart_int_and_q_init();
-  adc_single_EOC_interrupt_init();
+  adc_single_conv_init();
 
   //Configure SysTick Timer
   //Set System Clock to interrupt every ms.
@@ -41,8 +31,11 @@ int main(void){
 	while (1); //If fails, hang in while loop 
 
   char userVal;
-  uint16_t sampleVal=0x0f0f;
+  uint16_t sampleVal;
   int bitOfResult;
+  uint16_t mask;
+  uint16_t sampleBit;
+
 
   while (1) {
     static int ledval = 0;
@@ -66,13 +59,29 @@ int main(void){
     }
     else
     {
+	//if( ((ADC_TypeDef*)ADC1)->SR>>1 & (uint32_t)1)
+	
+	/* Wait until the ADC1 is ready */
+	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_ADONS) == RESET);
+
+	//while(ADC_GetFlagStatus(ADC1,ADC_FLAG_RCNR) == 1)
+	//{
+	//   ADC_ClearFlag(ADC1,ADC_FLAG_OVR);
+	//}
+        
+	ADC_SoftwareStartConv(ADC1); 
 	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);
 
+	
 	sampleVal = ADC_GetConversionValue(ADC1);
+        //usart_w_interrupt_putchar((char)sampleVal);
+	
 
 	bitOfResult = 11;
 	while(bitOfResult >= 0)
 	{
+	   //mask = (1 << bitOfResult);
+	   //sampleBit = (sampleVal & mask);  
 	   if((uint16_t)(sampleVal >> bitOfResult)&(uint16_t)1)
 	   {
 	   	usart_w_interrupt_putchar((char)'1');
@@ -84,7 +93,9 @@ int main(void){
 	   bitOfResult--;
 	}
 	usart_w_interrupt_putchar('\n');	
+	   
     }
+    Delay(250); //wait 250ms
   }
 }
 
