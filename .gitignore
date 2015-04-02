@@ -1,7 +1,3 @@
-ADC/adc_project/src/*.d
-ADC/adc_project/src/*.o
-ADC/adc_project/src/implementations
-ADC/adc_project/src/*.elf
 L1_Project/.cproject
 L1_Project/.project
 L1_Project/.updateLinks.sh

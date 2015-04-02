@@ -1,0 +1,5 @@
+src/*.d
+src/*.o
+src/*.elf
+src/implementations/
+Library/
