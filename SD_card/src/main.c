@@ -1,1 +1,1 @@
-/home/g/workspace/stm32_projects/Tools_and_Libs/implementations/usart/int_w_q_no_flowCNTL/main_template_for_usart.c
+/home/g/workspace/stm32_projects/Tools_and_Libs/implementations/spi/sd/main_for_spi_sd.c
