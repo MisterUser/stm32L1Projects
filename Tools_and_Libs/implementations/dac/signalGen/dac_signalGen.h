@@ -7,7 +7,7 @@
 
 #define DAC_DHR12R2_Address      0x40007414
 #define DAC_DHR8R1_Address       0x40007410
-
+#define DAC_DHR8R2_Address       0x4000741C
 
 /* Private function prototypes -----------------------------------------------*/
 void DAC_Config(void);
