@@ -17,13 +17,13 @@ if [ ! -e "$Binary" ]; then
 fi
 
 # ensure that no other openocd is currently connected
-pkill -9 st-flash && {
-    echo "$0 - st-flash was running: killing it"
-    sleep 0.2 # short delay, for SIGKILL signal to be processed
-}
+#pkill -9 st-flash && {
+#    echo "$0 - st-flash was running: killing it"
+#    sleep 0.2 # short delay, for SIGKILL signal to be processed
+#}
 
 # use the st-flash function to flash over STLink
-st-flash write $Binary 0x8000000 || Error="1"
+st-flash write $Binary 0x08000000 || Error="1"
 
 if [ "$Error" == "" ]; then
   echo "Successfully flashed"

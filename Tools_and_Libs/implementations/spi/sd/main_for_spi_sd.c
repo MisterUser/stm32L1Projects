@@ -3,9 +3,16 @@
 #include <stm32l1xx_gpio.h>
 #include "implementations/ff.h"
 #include "implementations/sd_driver.h"
+#include "implementations/dac_dma_tim.h"
+
  
 void Delay(uint32_t nTime);
 void gk_printChar(uint8_t pchar);
+#define BUFFERSIZE 1000
+uint8_t readBuf1[BUFFERSIZE];
+uint8_t readBuf2[BUFFERSIZE];
+uint8_t bufferToSend = 2;
+uint8_t buffer_finished = 0;
 
 int main(void){
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -22,7 +29,7 @@ int main(void){
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
   GPIO_Init(GPIOB , & GPIO_InitStructure );
 
-  usart_init();
+  //usart_init();
   SD_Init(); //<--done by f_open
 
   //Configure SysTick Timer
@@ -30,7 +37,7 @@ int main(void){
   if(SysTick_Config(SystemCoreClock / 32000))
 	while (1); //If fails, hang in while loop 
 
-  char userVal;
+  //char userVal;
 
 /*
   FATFS FatFs;   // Work area (file system object) for logical drive 
@@ -72,19 +79,57 @@ int main(void){
   uint32_t sd_name = cardinfo->SD_cid.ProdName1; 
   }
 */
-  uint8_t read_buf[4];
-  SD_Error readResp=SD_ReadBlock(read_buf,0x00150000,4);
+  
+
+  uint32_t fPTR = 0x0016002C;
+  SD_Error readResp=SD_ReadBlock(readBuf1,fPTR,1000);
   if(readResp == SD_RESPONSE_NO_ERROR)
   {
-     int byteToBeRead = 0;
-     for(;byteToBeRead < 4; byteToBeRead++)
-     {
-         usart_w_interrupt_putchar((char)read_buf[byteToBeRead]);	
-     }
+	fPTR = fPTR+1000;
+	readResp=SD_ReadBlock(readBuf2,fPTR,1000);
   }
-  while (1) {
-    static int ledval = 0;
+  bufferToSend = 2;
+  buffer_finished = 0;
 
+
+  //DMA starts with buffer 1 
+  DAC_DMA_TIM_init();
+  //bufferToSend = 2 at this point, so
+  //after buffer 1 is finished, buffer2 will be sent and buffer 1 will be loaded 
+
+  while (1) {
+
+
+    if(buffer_finished == 1)
+    {
+    
+    	static int ledval = 0;
+    	GPIO_WriteBit(GPIOB,GPIO_Pin_7,(ledval)? Bit_SET : Bit_RESET);
+    	ledval = 1-ledval;
+	
+	//iterate fPtr
+	fPTR = fPTR +1000;
+	//make sure it's not > 5,644,844 (size of song)
+	if(fPTR > 5644000)
+	{
+	   fPTR = 0x0016002C;
+	}
+		
+	//choose buffer by reading previously sent buffer
+	if(bufferToSend == 2) //2 was just sent
+	{
+	   readResp=SD_ReadBlock(readBuf1,fPTR,1000);
+	   bufferToSend = 1;
+	}
+	else
+	{
+           readResp=SD_ReadBlock(readBuf2,fPTR,1000);
+           bufferToSend = 2;
+        }
+		
+	buffer_finished = 0;
+    }
+    /*
     if(!gk_USART_RX_QueueEmpty())
     {
        userVal = usart_w_interrupt_getchar();
@@ -103,10 +148,11 @@ int main(void){
     }
     else
     {
-       usart_w_interrupt_putchar('x');
+       //usart_w_interrupt_putchar('x');
     }
+    */
     
-    Delay(250); //wait 250ms
+    //Delay(250); //wait 250ms
   }
 }
 
@@ -123,7 +169,7 @@ void SysTick_Handler (void){
   TimingDelay --;
 }
 
-void gk_printChar(uint8_t pchar)
+/*void gk_printChar(uint8_t pchar)
 {
 	int bitOfResult = 7;
         while(bitOfResult >= 0)
@@ -139,7 +185,7 @@ void gk_printChar(uint8_t pchar)
            bitOfResult--;
         }
         usart_w_interrupt_putchar('\n');
-}
+}*/
 
 
 #ifdef USE_FULL_ASSERT
