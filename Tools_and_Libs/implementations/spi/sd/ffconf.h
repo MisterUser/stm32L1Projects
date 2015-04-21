@@ -23,7 +23,7 @@
 /  and optional writing functions as well. */
 
 
-#define _FS_MINIMIZE	1
+#define _FS_MINIMIZE	3
 /* This option defines minimization level to remove some basic API functions.
 /
 /   0: All basic functions are enabled.
@@ -69,7 +69,7 @@
 / Locale and Namespace Configurations
 /---------------------------------------------------------------------------*/
 
-#define _CODE_PAGE	932
+#define _CODE_PAGE   1252	
 /* This option specifies the OEM code page to be used on the target system.
 /  Incorrect setting of the code page can cause a file open failure.
 /
@@ -90,6 +90,7 @@
 /   936  - Simplified Chinese GBK (DBCS)
 /   949  - Korean (DBCS)
 /   950  - Traditional Chinese Big5 (DBCS)
+/   1252 - Latin 1 (Windows)
 */
 
 

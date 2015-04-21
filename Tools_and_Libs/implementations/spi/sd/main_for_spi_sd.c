@@ -11,8 +11,8 @@ void gk_printChar(uint8_t pchar);
 #define BUFFERSIZE 1000
 uint8_t readBuf1[BUFFERSIZE];
 uint8_t readBuf2[BUFFERSIZE];
-uint8_t bufferToSend = 2;
-uint8_t buffer_finished = 0;
+__IO uint8_t bufferToSend = 2;
+__IO uint8_t buffer_finished = 0;
 
 int main(void){
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -82,11 +82,11 @@ int main(void){
   
 
   uint32_t fPTR = 0x0016002C;
-  SD_Error readResp=SD_ReadBlock(readBuf1,fPTR,1000);
+  SD_Error readResp=SD_ReadBlock(readBuf1,fPTR,BUFFERSIZE);
   if(readResp == SD_RESPONSE_NO_ERROR)
   {
-	fPTR = fPTR+1000;
-	readResp=SD_ReadBlock(readBuf2,fPTR,1000);
+	fPTR = fPTR+BUFFERSIZE;
+	readResp=SD_ReadBlock(readBuf2,fPTR,BUFFERSIZE);
   }
   bufferToSend = 2;
   buffer_finished = 0;
@@ -100,30 +100,31 @@ int main(void){
   while (1) {
 
 
-    if(buffer_finished == 1)
+    if(buffer_finished != 0)
     {
     
     	static int ledval = 0;
     	GPIO_WriteBit(GPIOB,GPIO_Pin_7,(ledval)? Bit_SET : Bit_RESET);
     	ledval = 1-ledval;
-	
+
 	//iterate fPtr
-	fPTR = fPTR +1000;
+	fPTR = fPTR +BUFFERSIZE;
 	//make sure it's not > 5,644,844 (size of song)
-	if(fPTR > 5644000)
+	/*if((fPTR - 0x0016002C) > 5644000)
 	{
 	   fPTR = 0x0016002C;
 	}
-		
+	*/
+
 	//choose buffer by reading previously sent buffer
 	if(bufferToSend == 2) //2 was just sent
 	{
-	   readResp=SD_ReadBlock(readBuf1,fPTR,1000);
+	   readResp=SD_ReadBlock(readBuf1,fPTR,BUFFERSIZE);
 	   bufferToSend = 1;
 	}
 	else
 	{
-           readResp=SD_ReadBlock(readBuf2,fPTR,1000);
+           readResp=SD_ReadBlock(readBuf2,fPTR,BUFFERSIZE);
            bufferToSend = 2;
         }
 		

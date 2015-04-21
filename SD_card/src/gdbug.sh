@@ -1,5 +1,5 @@
 #!/bin/bash
 #
-./clean.sh
+#./clean.sh
 make
 ./debug_stlinkv2.sh sdCard.elf
