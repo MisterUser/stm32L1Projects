@@ -6,8 +6,8 @@
 #define _DISKIO_DEFINED
 
 
-#define _USE_WRITE	0	/* 1: Enable disk_write function */
-#define _USE_IOCTL	0	/* 1: Enable disk_ioctl fucntion */
+#define _USE_WRITE	1	/* 1: Enable disk_write function */
+#define _USE_IOCTL	1	/* 1: Enable disk_ioctl fucntion */
 
 #include "integer.h"
 #include "sd_driver.h"          /* SD card higher layer API */

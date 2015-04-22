@@ -8,7 +8,7 @@
  
 void Delay(uint32_t nTime);
 void gk_printChar(uint8_t pchar);
-#define BUFFERSIZE 1000
+#define BUFFERSIZE 250 
 uint8_t readBuf1[BUFFERSIZE];
 uint8_t readBuf2[BUFFERSIZE];
 __IO uint8_t bufferToSend = 2;
@@ -30,27 +30,27 @@ int main(void){
   GPIO_Init(GPIOB , & GPIO_InitStructure );
 
   //usart_init();
-  SD_Init(); //<--done by f_open
 
   //Configure SysTick Timer
   //Set System Clock to interrupt every ms.
-  if(SysTick_Config(SystemCoreClock / 32000))
-	while (1); //If fails, hang in while loop 
+  //if(SysTick_Config(SystemCoreClock / 32000))
+//	while (1); //If fails, hang in while loop 
 
   //char userVal;
 
 /*
   FATFS FatFs;   // Work area (file system object) for logical drive 
-
-  // Register work area to the default drive 
-  f_mount(&FatFs, "", 0);
-
-  unsigned char read_buf[20];
   FIL fp;
-  FRESULT openResult;
-  openResult = f_open(&fp,"test",FA_READ);
-  if(!openResult)
+  
+  // Register work area to the default drive 
+  if(f_mount(&FatFs, "", 0) == FR_OK)
   {
+
+     unsigned char read_buf[20];
+     FRESULT openResult;
+     openResult = f_open(&fp,"test",FA_READ);
+     if(!openResult)
+     {
         FRESULT readResult;
 	UINT* num_bytes_read;
 	readResult = f_read(&fp,read_buf,10,num_bytes_read);
@@ -64,6 +64,9 @@ int main(void){
 	}
 	// Close the file //
     	f_close(&fp);
+     }
+
+     f_mount(0,"",0); //unmount
   }
 */
 
@@ -80,14 +83,23 @@ int main(void){
   }
 */
   
+  //ONLY if not using FatFs
+  SD_Init(); 
 
-  uint32_t fPTR = 0x0016002C;
+  uint32_t fPTR = 0x0210062C;
   SD_Error readResp=SD_ReadBlock(readBuf1,fPTR,BUFFERSIZE);
-  if(readResp == SD_RESPONSE_NO_ERROR)
+  while(readResp != SD_RESPONSE_NO_ERROR)
   {
-	fPTR = fPTR+BUFFERSIZE;
+      readResp=SD_ReadBlock(readBuf1,fPTR,BUFFERSIZE);
+  }
+
+  fPTR = fPTR+BUFFERSIZE;
+  readResp=SD_ReadBlock(readBuf2,fPTR,BUFFERSIZE);
+  while(readResp != SD_RESPONSE_NO_ERROR)
+  {
 	readResp=SD_ReadBlock(readBuf2,fPTR,BUFFERSIZE);
   }
+
   bufferToSend = 2;
   buffer_finished = 0;
 
@@ -108,27 +120,43 @@ int main(void){
     	ledval = 1-ledval;
 
 	//iterate fPtr
-	fPTR = fPTR +BUFFERSIZE;
+        fPTR = fPTR +BUFFERSIZE;
+
+	
+
 	//make sure it's not > 5,644,844 (size of song)
-	/*if((fPTR - 0x0016002C) > 5644000)
+	if(fPTR > 0x0266282F)
 	{
-	   fPTR = 0x0016002C;
+	   fPTR = 0x0210062C;
 	}
-	*/
+
 
 	//choose buffer by reading previously sent buffer
 	if(bufferToSend == 2) //2 was just sent
 	{
+	   //fPTR = 0x02662c00;
 	   readResp=SD_ReadBlock(readBuf1,fPTR,BUFFERSIZE);
+	   while(readResp != SD_RESPONSE_NO_ERROR)
+	   {
+        	readResp=SD_ReadBlock(readBuf1,fPTR,BUFFERSIZE);
+  	   }
+
 	   bufferToSend = 1;
 	}
 	else
 	{
+	   //fPTR = fPTR+BUFFERSIZE;
            readResp=SD_ReadBlock(readBuf2,fPTR,BUFFERSIZE);
-           bufferToSend = 2;
+           while(readResp != SD_RESPONSE_NO_ERROR)
+  	   {
+         	readResp=SD_ReadBlock(readBuf2,fPTR,BUFFERSIZE);
+	   }
+
+	   bufferToSend = 2;
         }
 		
 	buffer_finished = 0;
+
     }
     /*
     if(!gk_USART_RX_QueueEmpty())

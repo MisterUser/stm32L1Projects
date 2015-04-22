@@ -72,7 +72,7 @@ void DAC_TIM_Config(void)
   TIM_TimeBaseInitTypeDef    TIM_TimeBaseStructure;
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
   TIM_TimeBaseStructure.TIM_Period = 10; //222kHz/10 = 22.2kHz
-  TIM_TimeBaseStructure.TIM_Prescaler = 18;//should give 4000KHz/18 = 222KHz timer
+  TIM_TimeBaseStructure.TIM_Prescaler =65;// 18;//should give 4000KHz/18 = 222KHz timer
   TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV4; //0x0; <--DIV4 should make the clock at 4MHz
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
@@ -116,16 +116,15 @@ void DAC_DMA_TIM_init(void)
    NVIC_Init(&NVIC_InitStructure);
 
    DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR8R2_Address;
-   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&readBuf1;//&Sine8Bit;
+   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&readBuf1;
    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-   DMA_InitStructure.DMA_BufferSize = BUFFERSIZE;//32;
+   DMA_InitStructure.DMA_BufferSize = BUFFERSIZE;
    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-   //DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+//   DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
    DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-   //DMA_InitStructure.DMA_Priority = DMA_Priority_High;
    DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
    DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
    DMA_Init(DMA1_Channel3, &DMA_InitStructure);
@@ -146,37 +145,58 @@ void DMA1_Channel3_IRQHandler(void)
    if(DMA_GetITStatus(DMA1_IT_TC3) != RESET) //DMA1_IT_TC3: DMA1 Channel3 transfer complete interrupt.DMA1_IT_TC3: DMA1 Channel3 transfer complete interrupt.
    {
 	DAC_Cmd(DAC_Channel_2, DISABLE);
-	/* Enable DMA for DAC Channel2 */
+	/* Break connection between DMA for DAC Channel3 */
 	DAC_DMACmd(DAC_Channel_2, DISABLE);
 
 	/* Disable DMA1 Channel3 in order to load new buffer address */
-        DMA_Cmd(DMA1_Channel3, DISABLE);
+   //     DMA_Cmd(DMA1_Channel3, DISABLE);
+	DMA_DeInit(DMA1_Channel3);	
 
+	DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR8R2_Address;
+   //DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&readBuf1;
+   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+   DMA_InitStructure.DMA_BufferSize = BUFFERSIZE;
+   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+   DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+ //  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+   DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+   DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
+   DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+
+
+	if(bufferToSend == 1)
+	{
+	  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&readBuf1;
+//	  bufferToSend = 2;
+	}
+	else
+	{
+	  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&readBuf2;
+//	  bufferToSend = 1;
+	}
+
+   DMA_Init(DMA1_Channel3, &DMA_InitStructure);
+   DMA_ITConfig(DMA1_Channel3,DMA_IT_TC,ENABLE);
+
+/*
 	//switch DMA_MemoryBaseAddr to recently filled buffer
 	if(bufferToSend == 1)
 	{
 	  ((DMA_Channel_TypeDef*)DMA1_Channel3)->CMAR = (uint32_t)&readBuf1;
-//	  bufferToSend = 2;
-//	  ((DMA_Channel_TypeDef*)DMA1_Channel3)->CMAR = (uint32_t)&Sine8Bit;
 	}
 	else
 	{
 	  ((DMA_Channel_TypeDef*)DMA1_Channel3)->CMAR = (uint32_t)&readBuf2;
-//	  ((DMA_Channel_TypeDef*)DMA1_Channel3)->CMAR = (uint32_t)&Tri8Bit;
-//	  bufferToSend=1;
-	}
-
-	//Tell main loop to load new buffer
-	buffer_finished = 1;
-/*
-	if(DMA_GetFlagStatus(DMA1_FLAG_TC3) == SET)
-	{
-	   DMA_ClearFlag(DMA1_FLAG_TC3);
 	}
 */
+	//Tell main loop to load new buffer
+	buffer_finished = 1;
+
         DMA_ClearITPendingBit(DMA1_IT_GL3);
 
-        DMA_ITConfig(DMA1_Channel3,DMA_IT_TC,ENABLE);
+        //DMA_ITConfig(DMA1_Channel3,DMA_IT_TC,ENABLE);
 	/* Enable DMA1 Channel3 */
         DMA_Cmd(DMA1_Channel3, ENABLE);
 	
