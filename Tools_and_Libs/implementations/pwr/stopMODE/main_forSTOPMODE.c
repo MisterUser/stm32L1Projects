@@ -1,6 +1,7 @@
 #include <stm32l1xx.h>
 #include <stm32l1xx_rcc.h>
 #include <stm32l1xx_gpio.h>
+#include <stm32l1xx_flash.h>
 
 #include "implementations/stopMODE.h"
  

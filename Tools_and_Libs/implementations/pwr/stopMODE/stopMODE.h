@@ -8,8 +8,29 @@
 
 extern uint8_t sleepENABLED;
 
-void stopMODE_init();
-void EXTI_config();
+//Push Button for interrupt is PinA0
+// IF NOT PIN 0!!! -> must change IRQHandler name in stopMODE.c
 
+#define intPIN      	GPIO_Pin_0
+#define intPIN_CLK 	RCC_AHBPeriph_GPIOA
+#define intBank		GPIOA
+#define intEXTI_SRC	EXTI_PortSourceGPIOA
+#define intEXTI_PIN	EXTI_PinSource0
+#define intEXTI_LINE    EXTI_Line0	
+#define intIRQn		EXTI0_IRQn
+
+//Pin for LED
+#define ledPIN          GPIO_Pin_7
+#define ledPIN_CLK      RCC_AHBPeriph_GPIOB
+#define ledBank         GPIOB
+
+
+/*
+ * Initializes above-defined Pin (button) as EXTI
+ * and other pin for LED
+ * EXTI#_IRQHandler toggles extern sleepENABLED
+ */
+
+void stopMODE_init();
 
 #endif
