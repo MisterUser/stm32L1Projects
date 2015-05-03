@@ -30,6 +30,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l1xx.h"
+#include "sd_low_level.h"
+#include "stm32l1xx_spi.h"
 
 typedef enum 
 {  

@@ -1,18 +1,20 @@
 #include <stm32l1xx.h>
 #include <stm32l1xx_rcc.h>
 #include <stm32l1xx_gpio.h>
-#include "implementations/ff.h"
+//#include "implementations/ff.h"
 #include "implementations/sd_driver.h"
 #include "implementations/dac_dma_tim.h"
 
- 
-void Delay(uint32_t nTime);
-void gk_printChar(uint8_t pchar);
+//Variables 
 #define BUFFERSIZE 250 
 uint8_t readBuf1[BUFFERSIZE];
 uint8_t readBuf2[BUFFERSIZE];
 __IO uint8_t bufferToSend = 2;
 __IO uint8_t buffer_finished = 0;
+
+//Declarations
+void Delay(uint32_t nTime);
+//void gk_printChar(uint8_t pchar);
 
 int main(void){
   GPIO_InitTypeDef GPIO_InitStructure;

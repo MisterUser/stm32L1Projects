@@ -3,36 +3,43 @@
 DMA_InitTypeDef            DMA_InitStructure;
 extern __IO uint8_t buffer_finished;
 extern __IO uint8_t bufferToSend;
-/*
-const uint8_t Sine8Bit[32] = {
-	0,1,7,18,34,54,77,101,127,153,177,200,220,236,247,254,
-	255,251,242,228,210,189,165,140,114,87,65,44,26,12,3,1
-};
-
-const uint8_t Tri8Bit[32] = {
-	0,20,40,60,80,100,120,140,160,180,200,210,220,230,240,250,
-	255,240,230,220,210,200,180,160,140,120,100,80,60,40,20,10
-};
-*/
-
-
 
 void DAC_Config(void)
 {
   //RCC_MSIRangeConfig(RCC_MSIRange_5);
 
   /* Enable HSI Clock */
-  RCC_HSICmd(ENABLE);
+  RCC_HSICmd(DISABLE);
   /*!< Wait till HSI is ready */
-  while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
+  //while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
 
-  RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI);//SYSCLK = 16MHz
-  
-  RCC_HCLKConfig(RCC_SYSCLK_Div1); //AHB = 16MHz [DMA][GPIO]
-  RCC_PCLK1Config(RCC_HCLK_Div2);  //APB1 (low sleed) = 8MHz [DAC] -> [TIMERS 2-7]: 8MHz*2 = 16MHz
-  RCC_PCLK2Config(RCC_HCLK_Div2);  //APB2 (high speed) = 8MHz [SPI]
+  //disconnect HSE
+  RCC_HSEConfig(RCC_HSE_OFF);
+  if(RCC_GetFlagStatus(RCC_FLAG_HSERDY) != RESET )
+  {
+     while(1);
+  }
+
+  //RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI);//SYSCLK = 16MHz
+  RCC_SYSCLKConfig(RCC_SYSCLKSource_MSI);//SYSCLK = default 2.097MHz
+  RCC_MSIRangeConfig(RCC_MSIRange_5);//range 5 = 2.097MHz
+ 
+  //AHB (HCLK, AHB bus, core, memory, and DMA, FCLK)
+  //Cortex System timer = AHB/8
+  RCC_HCLKConfig(RCC_SYSCLK_Div1); //AHB = 2.097 [DMA][GPIO]
+
+  //APB clocks are based on AHB
+  //APB1 -> PCLK1 to APB1 Peripherals (including TIM2-7)
+  //if APB1 prescalar = 1, TIM2-7 clocks = APB1
+  //if APB1 prescalar > 1, TIM2-7 clocks = APB1*2 
+  RCC_PCLK1Config(RCC_HCLK_Div1);  //APB1 (low sleed) = 2MHz [DAC] -> [TIMERS 2-7]: 2MHz*1 = 2MHz
+
+  //APB2 -> PCLK2 to APB2 Peripherals (including TIM9-11)
+  //if APB2 prescalar = 1, TIM9-11 clocks = APB2
+  //if APB2 prescalar > 1, TIM9-11 clocks = APB2*2
+  RCC_PCLK2Config(RCC_HCLK_Div2);  //APB2 (high speed) = 2MHz [SPI]
+
   //RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-//disconnect HSE
 
   /* DMA1 clock enable (to be used with DAC) */
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
@@ -71,9 +78,9 @@ void DAC_TIM_Config(void)
   */
   TIM_TimeBaseInitTypeDef    TIM_TimeBaseStructure;
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-  TIM_TimeBaseStructure.TIM_Period = 10; //222kHz/10 = 22.2kHz
-  TIM_TimeBaseStructure.TIM_Prescaler =65;// 18;//should give 4000KHz/18 = 222KHz timer
-  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV4; //0x0; <--DIV4 should make the clock at 4MHz
+  TIM_TimeBaseStructure.TIM_Period = 95; //2097kHz/95 = 22.07kHz
+  TIM_TimeBaseStructure.TIM_Prescaler =1;//should give 2097KHz/1 = 2097KHz timer
+  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; //DIV1 -> TIM2CLK = 2MHz
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
 

@@ -1,13 +1,13 @@
 #include <stm32l1xx.h>
 #include <stm32l1xx_rcc.h>
 #include <stm32l1xx_gpio.h>
-#include <stm32l1xx_flash.h>
+//#include <stm32l1xx_flash.h>
 
 #include "implementations/stopMODE.h"
  
 void Delay(uint32_t nTime);
 
-uint8_t sleepENABLED = 0;
+__IO uint8_t sleepENABLED = 0;
 
 
 int main(void){
@@ -41,16 +41,9 @@ int main(void){
 
     if(sleepENABLED)
     {
-	GPIO_WriteBit(GPIOB, GPIO_Pin_6,Bit_RESET);
-	GPIO_WriteBit(GPIOB, GPIO_Pin_7,Bit_RESET);
-
-	 /* Enable Ultra low power mode */
-        PWR_UltraLowPowerCmd(ENABLE);
-
-	/* Enter Stop Mode */
-        PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
+	stop_prepare_and_enter();
 	
-	GPIO_WriteBit(GPIOB, GPIO_Pin_7,Bit_SET);
+	stop_exit();
     }
     //toggle led
     GPIO_WriteBit(GPIOB,GPIO_Pin_6,(ledval)? Bit_SET : Bit_RESET);

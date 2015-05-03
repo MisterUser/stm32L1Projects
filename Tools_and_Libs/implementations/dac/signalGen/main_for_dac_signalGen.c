@@ -10,7 +10,7 @@ int main(void){
 
   //Enable Peripheral Clocks
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); 
-  
+/*  
   //Configure Pins
   GPIO_InitTypeDef GPIO_InitStructure;
   GPIO_StructInit(& GPIO_InitStructure );
@@ -21,7 +21,7 @@ int main(void){
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
-
+*/
   DAC_signalGen_init();
 
   //Configure SysTick Timer
@@ -33,7 +33,7 @@ int main(void){
     static int ledval = 0;
 
     //toggle led
-    GPIO_WriteBit(GPIOB,GPIO_Pin_7,(ledval)? Bit_SET : Bit_RESET);
+ //   GPIO_WriteBit(GPIOB,GPIO_Pin_7,(ledval)? Bit_SET : Bit_RESET);
     ledval = 1-ledval;
     
     Delay(250); //wait 250ms

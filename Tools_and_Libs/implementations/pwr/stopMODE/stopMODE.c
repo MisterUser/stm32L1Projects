@@ -1,21 +1,14 @@
 #include "stopMODE.h"
 
-/*
- * This initializes Pin A0 (button) as EXTI
- *
- */
 void stopMODE_init()
 {
-
   GPIO_InitTypeDef GPIO_InitStructure;
   EXTI_InitTypeDef EXTI_InitStructure;
   NVIC_InitTypeDef NVIC_InitStructure;
 
-  /* Enable the BUTTON Clock */
-  RCC_AHBPeriphClockCmd(intPIN_CLK, ENABLE);
- 
-
   /* Configure Button pin as input */
+  RCC_AHBPeriphClockCmd(intPIN_CLK, ENABLE);
+
   GPIO_StructInit(&GPIO_InitStructure);
   GPIO_InitStructure.GPIO_Pin  = intPIN;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
@@ -33,7 +26,6 @@ void stopMODE_init()
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
   GPIO_Init(ledBank, &GPIO_InitStructure);
   
-
   /* Enable SYSCONFIG clock: routes EXTI to button line (line 1 in this case)*/
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 
@@ -48,14 +40,31 @@ void stopMODE_init()
   EXTI_Init(&EXTI_InitStructure);
 
   /* Enable and set Button EXTI Interrupt to the lowest priority */
+//  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+
   NVIC_InitStructure.NVIC_IRQChannel = intIRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-
   NVIC_Init(&NVIC_InitStructure);
 }
 
+void stop_prepare_and_enter(void)
+{
+   GPIO_WriteBit(GPIOB, GPIO_Pin_6,Bit_RESET);
+   GPIO_WriteBit(GPIOB, GPIO_Pin_7,Bit_RESET);
+
+   /* Enable Ultra low power mode */
+   PWR_UltraLowPowerCmd(ENABLE);
+
+   /* Enter Stop Mode */
+   PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
+}
+
+void stop_exit(void)
+{
+   GPIO_WriteBit(GPIOB, GPIO_Pin_7,Bit_SET);
+}
 
 void EXTI0_IRQHandler (void)
 {

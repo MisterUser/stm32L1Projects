@@ -9,10 +9,21 @@ ASFLAGS = -g
 
 OBJS=  $(STARTUP) main.o
 OBJS+= stm32l1xx_gpio.o stm32l1xx_rcc.o misc.o
-OBJS+= stm32l1xx_usart.o usart_int_w_q_no_flowCNTL.o
-OBJS+= stm32l1xx_spi.o ff.o diskio.o sd_driver.o sd_low_level.o
+
+#USART
+#OBJS+= stm32l1xx_usart.o usart_int_w_q_no_flowCNTL.o
+
+#SPI, SD, and FATFS
+OBJS+= stm32l1xx_spi.o sd_driver.o sd_low_level.o
+#OBJS+= ff.o diskio.o 
+
+#DAC with DMA and TIMER
 OBJS+= stm32l1xx_dac.o dac_dma_tim.o
 OBJS+= stm32l1xx_tim.o stm32l1xx_dma.o
+
+#sleep mode and interrupts
+OBJS+= stm32l1xx_syscfg.o stm32l1xx_exti.o misc.o
+OBJS+= stm32l1xx_pwr.o stopMODE.o
 
 # include common make file
 

@@ -6,7 +6,7 @@
 #include <misc.h>
 #include <stm32l1xx_pwr.h>
 
-extern uint8_t sleepENABLED;
+extern __IO uint8_t sleepENABLED;
 
 //Push Button for interrupt is PinA0
 // IF NOT PIN 0!!! -> must change IRQHandler name in stopMODE.c
@@ -24,7 +24,6 @@ extern uint8_t sleepENABLED;
 #define ledPIN_CLK      RCC_AHBPeriph_GPIOB
 #define ledBank         GPIOB
 
-
 /*
  * Initializes above-defined Pin (button) as EXTI
  * and other pin for LED
@@ -32,5 +31,7 @@ extern uint8_t sleepENABLED;
  */
 
 void stopMODE_init();
+void stop_prepare_and_enter();
+void stop_exit();
 
 #endif
