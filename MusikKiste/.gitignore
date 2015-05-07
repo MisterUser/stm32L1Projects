@@ -1,0 +1,8 @@
+src/*.d
+src/*.o
+src/*.elf
+src/implementations/
+src/*.sh
+Lib_old/
+*.wav
+stm32l1xx_conf.h

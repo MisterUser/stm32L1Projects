@@ -9,20 +9,23 @@ void DAC_Config(void)
   //RCC_MSIRangeConfig(RCC_MSIRange_5);
 
   /* Enable HSI Clock */
-  RCC_HSICmd(DISABLE);
+  RCC_HSICmd(ENABLE);
+  //RCC_HSICmd(DISABLE);
   /*!< Wait till HSI is ready */
-  //while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
+  while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
 
+/*
   //disconnect HSE
   RCC_HSEConfig(RCC_HSE_OFF);
   if(RCC_GetFlagStatus(RCC_FLAG_HSERDY) != RESET )
   {
      while(1);
   }
+*/
 
-  //RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI);//SYSCLK = 16MHz
-  RCC_SYSCLKConfig(RCC_SYSCLKSource_MSI);//SYSCLK = default 2.097MHz
-  RCC_MSIRangeConfig(RCC_MSIRange_5);//range 5 = 2.097MHz
+  RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI);//SYSCLK = 16MHz
+  //RCC_SYSCLKConfig(RCC_SYSCLKSource_MSI);//SYSCLK = default 2.097MHz
+  //RCC_MSIRangeConfig(RCC_MSIRange_5);//range 5 = 2.097MHz
  
   //AHB (HCLK, AHB bus, core, memory, and DMA, FCLK)
   //Cortex System timer = AHB/8
@@ -37,7 +40,7 @@ void DAC_Config(void)
   //APB2 -> PCLK2 to APB2 Peripherals (including TIM9-11)
   //if APB2 prescalar = 1, TIM9-11 clocks = APB2
   //if APB2 prescalar > 1, TIM9-11 clocks = APB2*2
-  RCC_PCLK2Config(RCC_HCLK_Div2);  //APB2 (high speed) = 2MHz [SPI]
+  RCC_PCLK2Config(RCC_HCLK_Div1);  //APB2 (high speed) = 2MHz [SPI]
 
   //RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 
@@ -78,9 +81,9 @@ void DAC_TIM_Config(void)
   */
   TIM_TimeBaseInitTypeDef    TIM_TimeBaseStructure;
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-  TIM_TimeBaseStructure.TIM_Period = 95; //2097kHz/95 = 22.07kHz
-  TIM_TimeBaseStructure.TIM_Prescaler =1;//should give 2097KHz/1 = 2097KHz timer
-  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; //DIV1 -> TIM2CLK = 2MHz
+  TIM_TimeBaseStructure.TIM_Period = 100; //2097kHz/95 = 22.07kHz
+  TIM_TimeBaseStructure.TIM_Prescaler = 3;//should give 2097KHz/1 = 2097KHz timer
+  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV4; //DIV1 -> TIM2CLK = 2MHz
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
 

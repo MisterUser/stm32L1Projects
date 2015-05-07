@@ -8,7 +8,7 @@
 #define DAC_DHR12R2_Address      0x40007414
 #define DAC_DHR8R1_Address       0x40007410
 #define DAC_DHR8R2_Address       0x4000741C
-#define BUFFERSIZE 250
+#define BUFFERSIZE 256
 extern uint8_t readBuf1[BUFFERSIZE];
 extern uint8_t readBuf2[BUFFERSIZE];
 

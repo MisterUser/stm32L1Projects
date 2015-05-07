@@ -64,9 +64,9 @@ typedef enum
 #define SD_SPI_MOSI_SOURCE               GPIO_PinSource5
 #define SD_SPI_MOSI_AF                   GPIO_AF_SPI1
 
-#define SD_CS_PIN                        GPIO_Pin_2                  /* PD.2 */
-#define SD_CS_GPIO_PORT                  GPIOD                       /* GPIOD */
-#define SD_CS_GPIO_CLK                   RCC_AHBPeriph_GPIOD
+#define SD_CS_PIN                        GPIO_Pin_8                  /* PD.2 */
+#define SD_CS_GPIO_PORT                  GPIOB                       /* GPIOD */
+#define SD_CS_GPIO_CLK                   RCC_AHBPeriph_GPIOB
 /*
 #define SD_DETECT_PIN                    GPIO_Pin_6                  
 #define SD_DETECT_EXTI_LINE              EXTI_Line6
