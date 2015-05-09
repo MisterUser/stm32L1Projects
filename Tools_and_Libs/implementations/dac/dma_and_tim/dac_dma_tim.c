@@ -10,22 +10,21 @@ void DAC_Config(void)
 
   /* Enable HSI Clock */
   RCC_HSICmd(ENABLE);
-  //RCC_HSICmd(DISABLE);
   /*!< Wait till HSI is ready */
   while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
+  //RCC_HSICmd(DISABLE);
 
-/*
   //disconnect HSE
   RCC_HSEConfig(RCC_HSE_OFF);
   if(RCC_GetFlagStatus(RCC_FLAG_HSERDY) != RESET )
   {
      while(1);
   }
-*/
 
   RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI);//SYSCLK = 16MHz
   //RCC_SYSCLKConfig(RCC_SYSCLKSource_MSI);//SYSCLK = default 2.097MHz
   //RCC_MSIRangeConfig(RCC_MSIRange_5);//range 5 = 2.097MHz
+  //RCC_MSIRangeConfig(RCC_MSIRange_6);//range 6 = 4.194MHz
  
   //AHB (HCLK, AHB bus, core, memory, and DMA, FCLK)
   //Cortex System timer = AHB/8
@@ -76,14 +75,15 @@ void DAC_TIM_Config(void)
   */
   /*
    * With AHB = 16MHz
-   * APB1 Prescalar = 2 -> 8MHz
-   * TIM2 clock is APB1 x 2 = 16MHz
+   * APB1 Prescalar = 1 -> 16MHz
+   * TIM2 clock is APB1 x 1 = 16MHz
+   * 100 period with 6 prescalar and clock divisor of 4 seems to be 22K
   */
   TIM_TimeBaseInitTypeDef    TIM_TimeBaseStructure;
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-  TIM_TimeBaseStructure.TIM_Period = 100; //2097kHz/95 = 22.07kHz
-  TIM_TimeBaseStructure.TIM_Prescaler = 3;//should give 2097KHz/1 = 2097KHz timer
-  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV4; //DIV1 -> TIM2CLK = 2MHz
+  TIM_TimeBaseStructure.TIM_Period = 100;//85; //2097kHz/95 = 22.07kHz
+  TIM_TimeBaseStructure.TIM_Prescaler = 6;//1;//should give 2097KHz/1 = 2097KHz timer
+  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV4;// TIM_CKD_DIV1; //DIV1 -> TIM2CLK = 2MHz
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
 

@@ -6,7 +6,7 @@
 //#include "implementations/stopMODE.h"
 
 //Variables 
-#define BUFFERSIZE 256
+#define BUFFERSIZE 512 
 uint8_t readBuf1[BUFFERSIZE];
 uint8_t readBuf2[BUFFERSIZE];
 __IO uint8_t bufferToSend = 2;
