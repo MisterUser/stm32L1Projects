@@ -6,7 +6,9 @@
 //#include "implementations/stopMODE.h"
 
 //Variables 
-#define BUFFERSIZE 512 
+#define BUFFERSIZE 512 //for 4MHz
+//#define BUFFERSIZE 512  //for 16MHz
+//#define BUFFERSIZE 16 
 uint8_t readBuf1[BUFFERSIZE];
 uint8_t readBuf2[BUFFERSIZE];
 __IO uint8_t bufferToSend = 2;
@@ -31,6 +33,7 @@ int main(void){
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
+  GPIO_WriteBit(GPIOB, GPIO_Pin_6,Bit_SET);
   //--------------STOP MODE SETUP----------//
  // stopMODE_init();
 
@@ -77,21 +80,18 @@ int main(void){
     if(buffer_finished != 0)
     {
     
-    	static int ledval = 0;
-    	GPIO_WriteBit(GPIOB,GPIO_Pin_6,(ledval)? Bit_SET : Bit_RESET);
-    	ledval = 1-ledval;
+//    	static int ledval = 0;
+//    	GPIO_WriteBit(GPIOB,GPIO_Pin_6,(ledval)? Bit_SET : Bit_RESET);
+//    	ledval = 1-ledval;
 
 	//iterate fPtr
         fPTR = fPTR +BUFFERSIZE;
-
-	
 
 	//make sure it's not > 5,644,844 (size of song)
 	if(fPTR > 0x0266282F)
 	{
 	   fPTR = 0x0210062C;
 	}
-
 	//choose buffer by reading previously sent buffer
 	if(bufferToSend == 2) //2 was just sent
 	{

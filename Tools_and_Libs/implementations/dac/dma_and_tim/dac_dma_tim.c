@@ -6,14 +6,6 @@ extern __IO uint8_t bufferToSend;
 
 void DAC_Config(void)
 {
-  //RCC_MSIRangeConfig(RCC_MSIRange_5);
-
-  /* Enable HSI Clock */
-  RCC_HSICmd(ENABLE);
-  /*!< Wait till HSI is ready */
-  while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
-  //RCC_HSICmd(DISABLE);
-
   //disconnect HSE
   RCC_HSEConfig(RCC_HSE_OFF);
   if(RCC_GetFlagStatus(RCC_FLAG_HSERDY) != RESET )
@@ -21,25 +13,39 @@ void DAC_Config(void)
      while(1);
   }
 
+ //---------SELECT CLOCK------------------------------------------//
+  //-------------USING HSI-----------//
+  /* Enable HSI Clock */
+  RCC_HSICmd(ENABLE);
+
+  /*!< Wait till HSI is ready */
+  while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
   RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI);//SYSCLK = 16MHz
+  RCC_MSICmd(DISABLE); 
+
+  //------------USING MSI----------//
+  //RCC_HSICmd(DISABLE);
   //RCC_SYSCLKConfig(RCC_SYSCLKSource_MSI);//SYSCLK = default 2.097MHz
   //RCC_MSIRangeConfig(RCC_MSIRange_5);//range 5 = 2.097MHz
   //RCC_MSIRangeConfig(RCC_MSIRange_6);//range 6 = 4.194MHz
+ //---------SELECT CLOCK------------------------------------------//
  
   //AHB (HCLK, AHB bus, core, memory, and DMA, FCLK)
   //Cortex System timer = AHB/8
-  RCC_HCLKConfig(RCC_SYSCLK_Div1); //AHB = 2.097 [DMA][GPIO]
+  RCC_HCLKConfig(RCC_SYSCLK_Div2); //AHB = 8MHz [DMA][GPIO]
 
   //APB clocks are based on AHB
   //APB1 -> PCLK1 to APB1 Peripherals (including TIM2-7)
   //if APB1 prescalar = 1, TIM2-7 clocks = APB1
   //if APB1 prescalar > 1, TIM2-7 clocks = APB1*2 
-  RCC_PCLK1Config(RCC_HCLK_Div1);  //APB1 (low sleed) = 2MHz [DAC] -> [TIMERS 2-7]: 2MHz*1 = 2MHz
+  RCC_PCLK1Config(RCC_HCLK_Div4);  //APB1 (low sleed) = 2MHz [DAC] 
+				  //      [TIMERS 2-7]: 2MHz*2 = 4MHz
+				  // above may not be true, because TIM2 = 2MHz
 
   //APB2 -> PCLK2 to APB2 Peripherals (including TIM9-11)
   //if APB2 prescalar = 1, TIM9-11 clocks = APB2
   //if APB2 prescalar > 1, TIM9-11 clocks = APB2*2
-  RCC_PCLK2Config(RCC_HCLK_Div1);  //APB2 (high speed) = 2MHz [SPI]
+  RCC_PCLK2Config(RCC_HCLK_Div1);  //APB2 (high speed) = 8MHz [SPI]
 
   //RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 
@@ -81,9 +87,9 @@ void DAC_TIM_Config(void)
   */
   TIM_TimeBaseInitTypeDef    TIM_TimeBaseStructure;
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-  TIM_TimeBaseStructure.TIM_Period = 100;//85; //2097kHz/95 = 22.07kHz
-  TIM_TimeBaseStructure.TIM_Prescaler = 6;//1;//should give 2097KHz/1 = 2097KHz timer
-  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV4;// TIM_CKD_DIV1; //DIV1 -> TIM2CLK = 2MHz
+  TIM_TimeBaseStructure.TIM_Period = 90; //2000kHz/90 = 22222 kHz
+  TIM_TimeBaseStructure.TIM_Prescaler = 1;
+  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; //DIV1 -> TIM2CLK = 2MHz
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
 

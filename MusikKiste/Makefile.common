@@ -55,7 +55,7 @@ STARTUP= $(COMPTOOLS)/startup_stm32l1xx.o $(COMPTOOLS)/system_stm32l1xx.o
 
 # Compilation Flags
 
-FULLASSERT = -DUSE_FULL_ASSERT 
+#FULLASSERT = -DUSE_FULL_ASSERT 
 
 
 LDFLAGS+= -T$(LDSCRIPT) -mthumb -mcpu=cortex-m3 
