@@ -8,3 +8,8 @@ src/debug_stlinkv2.sh
 src/flash_stlinkv2.sh
 stm32l1xx_conf.h
 Library/
+.gitignore
+Makefile.common
+src/st-util.log
+src/startscript_stlinkv2.gdb
+
