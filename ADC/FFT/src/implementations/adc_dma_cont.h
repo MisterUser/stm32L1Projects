@@ -6,5 +6,6 @@
 
 #define ADC1_DR_ADDRESS    ((uint32_t)0x40012458)
 void adc_dma_cont_init();
+void ADC_TIM_Config();
 
 #endif

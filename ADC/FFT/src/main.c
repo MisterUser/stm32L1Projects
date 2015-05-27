@@ -6,8 +6,10 @@
 #include "implementations/adc_dma_cont.h"
  
 void Delay(uint32_t nTime);
-extern uint16_t sampleVal;
-extern uint8_t newSampleFlag;
+extern uint16_t sampleVals1[4096];
+extern uint16_t sampleVals2[4096];
+extern uint8_t convDoneFlag;
+extern uint8_t destBuffer;
 
 int main(void){
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -43,7 +45,9 @@ int main(void){
 
   char userVal;
   //uint16_t sampleVal=0x0f0f; -> w/ interrupt, move sampleVal to adc file
+  int sampleIter;
   int bitOfResult;
+  destBuffer=1;
 
   while (1) {
     static int ledval = 0;
@@ -53,9 +57,6 @@ int main(void){
     {
        userVal = usart_w_interrupt_getchar();
 
-       //toggle led
-       GPIO_WriteBit(GPIOB,GPIO_Pin_7,(ledval)? Bit_SET : Bit_RESET);
-       ledval = 1-ledval;
        usart_w_interrupt_putchar('\n');
        usart_w_interrupt_putchar('\r');
        usart_w_interrupt_putchar('R');
@@ -67,29 +68,61 @@ int main(void){
        usart_w_interrupt_putchar('\n');
        usart_w_interrupt_putchar('\r');
     }
-    if(newSampleFlag)
+    if(convDoneFlag)
     {
-	newSampleFlag=0; //set by ADC1_IRQ_Handler()
+       GPIO_WriteBit(GPIOB,GPIO_Pin_7,(ledval)? Bit_SET : Bit_RESET);
+       //toggle led
+       ledval = 1-ledval;
+//       GPIO_WriteBit(GPIOB,GPIO_Pin_7,Bit_SET);
+
+	destBuffer = 1-destBuffer;
+
+	convDoneFlag=0; //set by ADC1_IRQ_Handler()
 	//The following two lines are if the ADC doesn't have EOC interrupt enables
 	//  W/o the interrupt, it must poll the EOC flag before it gets the conversion value
 	//while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);
 	//sampleVal = ADC_GetConversionValue(ADC1); <--now done in ADC1_IRQ_Handler()
 
-	bitOfResult = 11;
-	while(bitOfResult >= 0)
+	sampleIter = 0;
+	for(;sampleIter<20;sampleIter++)
 	{
-	   if((uint16_t)(sampleVal >> bitOfResult)&(uint16_t)1)
+    	   bitOfResult = 11;
+	   while(bitOfResult >= 0)
 	   {
-	   	usart_w_interrupt_putchar((char)'1');
+	      if((uint16_t)(sampleVals1[sampleIter] >> bitOfResult)&(uint16_t)1)
+	      {
+	         usart_w_interrupt_putchar((char)'1');
+	      }
+	      else
+	      {
+		   usart_w_interrupt_putchar((char)'0');
+	      }
+	      bitOfResult--;
 	   }
-	   else
-	   {
-		usart_w_interrupt_putchar((char)'0');
-	   }
-	   bitOfResult--;
 	}
 	//usart_w_interrupt_putchar('\n');	
 	usart_w_interrupt_putchar('\r');	
+
+        sampleIter = 0;
+        for(;sampleIter<20;sampleIter++)
+        {
+           bitOfResult = 11;
+           while(bitOfResult >= 0)
+           {
+              if((uint16_t)(sampleVals2[sampleIter] >> bitOfResult)&(uint16_t)1)
+              {
+                 usart_w_interrupt_putchar((char)'1');
+              }
+              else
+              {
+                   usart_w_interrupt_putchar((char)'0');
+              }
+              bitOfResult--;
+           }
+        }
+        //usart_w_interrupt_putchar('\n');      
+        usart_w_interrupt_putchar('\r');
+
     }
     Delay(10); //wait 10ms
   }
