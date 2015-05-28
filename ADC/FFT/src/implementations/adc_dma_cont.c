@@ -1,9 +1,9 @@
 #include "adc_dma_cont.h"
 
-uint16_t sampleVals1[4096]={0};
-uint16_t sampleVals2[4096]={0};
-uint8_t convDoneFlag;
-uint8_t destBuffer=1;
+volatile uint16_t sampleVals1[4096]={0};
+volatile uint16_t sampleVals2[4096]={0};
+volatile uint8_t convDoneFlag;
+volatile uint8_t destBuffer=1;
 
 void ADC_TIM_Config(void)
 {
@@ -162,10 +162,12 @@ void DMA1_Channel1_IRQHandler(void)
    if(DMA_GetITStatus(DMA1_IT_TC1) != RESET)
    {
 	convDoneFlag=1;
+/*
 	if(destBuffer ==0)
 	{((DMA_Channel_TypeDef *)DMA1_Channel1)->CMAR=(uint32_t)&sampleVals1;}
 	else
         {((DMA_Channel_TypeDef *)DMA1_Channel1)->CMAR=(uint32_t)&sampleVals2;}
+*/
 	DMA_ClearITPendingBit(DMA1_IT_TC1);
    }
 }

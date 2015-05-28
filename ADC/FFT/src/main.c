@@ -4,12 +4,20 @@
 #include <stm32l1xx_tim.h>
 #include "implementations/usart_int_and_q.h"
 #include "implementations/adc_dma_cont.h"
+#include "implementations/dac_signalGen.h"
  
 void Delay(uint32_t nTime);
-extern uint16_t sampleVals1[4096];
-extern uint16_t sampleVals2[4096];
-extern uint8_t convDoneFlag;
-extern uint8_t destBuffer;
+extern volatile uint16_t sampleVals1[4096];
+extern volatile uint16_t sampleVals2[4096];
+extern volatile uint8_t convDoneFlag;
+extern volatile uint8_t destBuffer;
+char userVal;
+  //uint16_t sampleVal=0x0f0f; -> w/ interrupt, move sampleVal to adc file
+int sampleIter;
+volatile uint16_t * fftBuffer;
+
+void usart_print_bits(uint16_t value,uint8_t bitsToPrint);
+void usart_print_decimal(uint16_t value,uint8_t numDigits);
 
 int main(void){
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -37,16 +45,13 @@ int main(void){
 
   usart_int_and_q_init();
   adc_dma_cont_init();
+  DAC_signalGen_init(); //use this for testing
 
   //Configure SysTick Timer
   //Set System Clock to interrupt every ms.
   if(SysTick_Config(SystemCoreClock / 1000))
 	while (1); //If fails, hang in while loop 
 
-  char userVal;
-  //uint16_t sampleVal=0x0f0f; -> w/ interrupt, move sampleVal to adc file
-  int sampleIter;
-  int bitOfResult;
   destBuffer=1;
 
   while (1) {
@@ -70,62 +75,86 @@ int main(void){
     }
     if(convDoneFlag)
     {
-       GPIO_WriteBit(GPIOB,GPIO_Pin_7,(ledval)? Bit_SET : Bit_RESET);
-       //toggle led
-       ledval = 1-ledval;
-//       GPIO_WriteBit(GPIOB,GPIO_Pin_7,Bit_SET);
-
-	destBuffer = 1-destBuffer;
-
+        //clear flag 
 	convDoneFlag=0; //set by ADC1_IRQ_Handler()
-	//The following two lines are if the ADC doesn't have EOC interrupt enables
-	//  W/o the interrupt, it must poll the EOC flag before it gets the conversion value
-	//while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC) == RESET);
-	//sampleVal = ADC_GetConversionValue(ADC1); <--now done in ADC1_IRQ_Handler()
-
-	sampleIter = 0;
-	for(;sampleIter<20;sampleIter++)
-	{
-    	   bitOfResult = 11;
-	   while(bitOfResult >= 0)
-	   {
-	      if((uint16_t)(sampleVals1[sampleIter] >> bitOfResult)&(uint16_t)1)
-	      {
-	         usart_w_interrupt_putchar((char)'1');
-	      }
-	      else
-	      {
-		   usart_w_interrupt_putchar((char)'0');
-	      }
-	      bitOfResult--;
-	   }
-	}
-	//usart_w_interrupt_putchar('\n');	
-	usart_w_interrupt_putchar('\r');	
-
-        sampleIter = 0;
-        for(;sampleIter<20;sampleIter++)
+        
+	//toggle led
+	GPIO_WriteBit(GPIOB,GPIO_Pin_7,(ledval)? Bit_SET : Bit_RESET);
+        ledval = 1-ledval;
+/*
+	//set fft pointer to buffer that was newly loaded by ADC	
+        if(destBuffer)//1=buffer 2 is currently being loaded by ADC
         {
-           bitOfResult = 11;
-           while(bitOfResult >= 0)
-           {
-              if((uint16_t)(sampleVals2[sampleIter] >> bitOfResult)&(uint16_t)1)
-              {
-                 usart_w_interrupt_putchar((char)'1');
-              }
-              else
-              {
-                   usart_w_interrupt_putchar((char)'0');
-              }
-              bitOfResult--;
-           }
-        }
-        //usart_w_interrupt_putchar('\n');      
-        usart_w_interrupt_putchar('\r');
+	   //so buffer 1 will be processed (just finished being loaded by ADC)
+	   fftBuffer = sampleVals1;
+	}
+	else {fftBuffer = sampleVals2;}
+*/
 
+	fftBuffer = sampleVals1;
+	//print values to USART (for testing only)
+	usart_w_interrupt_putchar('{');
+	sampleIter = 0;
+	for(;sampleIter<32;sampleIter++)
+	{
+	   //usart_print_bits(fftBuffer[sampleIter],12);
+	   usart_print_decimal(fftBuffer[sampleIter],4);
+	   usart_w_interrupt_putchar(',');
+	}
+	usart_w_interrupt_putchar('}');
+	usart_w_interrupt_putchar('\n');	
+	//usart_w_interrupt_putchar('\r');	
+
+	//after FFT is finished, designate current fftBuffer as next destBuffer for ADC
+	destBuffer = 1-destBuffer;
     }
     Delay(10); //wait 10ms
   }
+}
+
+void usart_print_bits(uint16_t value,uint8_t bitsToPrint)
+{
+   int bitOfResult = bitsToPrint-1;
+   while(bitOfResult >= 0)
+   {
+      if((uint16_t)(value >> bitOfResult)&(uint16_t)1)
+      {
+         usart_w_interrupt_putchar((char)'1');
+      }
+      else
+      {
+         usart_w_interrupt_putchar((char)'0');
+      }
+      bitOfResult--;
+   }
+}
+
+void usart_print_decimal(uint16_t value,uint8_t numDigits)
+{
+  int powOfTen;
+  if(value>=10^(numDigits-1))
+  {
+     powOfTen = numDigits -1;
+  }
+  else if(value>=10^(numDigits-2))
+  {
+     powOfTen = numDigits -2;
+  }
+  else if(value>=10^(numDigits-3))
+  {
+     powOfTen = numDigits -3;
+  }
+  else powOfTen = 0;
+
+  int denom;
+  while(powOfTen >=0)
+  {
+        denom=10^powOfTen;
+	usart_w_interrupt_putchar((char)((value/denom)+'0'));
+	value = value%denom;
+	powOfTen--;
+  } 
+   
 }
 
 //Timer code

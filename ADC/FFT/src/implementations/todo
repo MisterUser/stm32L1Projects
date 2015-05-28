@@ -1,0 +1,9 @@
+   XSet up timer 3 to TRG at 44kHz
+   Xuse TIM3_TRGO for ADC
+   XDMA transfers data on each ADC sample for 4096 samples
+-when DMA is done with 4096:
+   Xinterrupts
+   Xsets flag
+   Xswitches buffers
+   Xstarts ADC
+
