@@ -1,4 +1,5 @@
-1. Connect SWD
+1. Connect STLINK & uC
+  On STLINK side (SWD header)
     - Pin 1 -> VDD of external uC
     - Pin 2 -> SWCLK
     - Pin 3 -> GND
@@ -7,4 +8,13 @@
     - Pin 5 -> NRST (OPTIONAL)
     - Pin 6 -> SWO (RESERVED)
     
+  On uC side
+    - PA13 -> SWDIO
+    - PA14 -> SWCLK
     
+2. NRST should be high?
+
+3. To program:
+   - Windows: STM32 ST-LINK Utility
+      
+   - Linux: st-util flash or debug
