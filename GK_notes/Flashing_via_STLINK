@@ -1,0 +1,10 @@
+1. Connect SWD
+    - Pin 1 -> VDD of external uC
+    - Pin 2 -> SWCLK
+    - Pin 3 -> GND
+    - Pin 4 -> SWDIO
+    don't need to connect pins 5&6
+    - Pin 5 -> NRST (OPTIONAL)
+    - Pin 6 -> SWO (RESERVED)
+    
+    
