@@ -1,8 +1,8 @@
 1. Connect STLINK & uC
   On STLINK side (SWD header)
-    - Pin 1 -> VDD of external uC
+    - Pin 1 -> VDD of external uC -> Connect to same as on uC side
     - Pin 2 -> SWCLK
-    - Pin 3 -> GND
+    - Pin 3 -> GND                -> Connect to same as on uC side
     - Pin 4 -> SWDIO
     don't need to connect pins 5&6
     - Pin 5 -> NRST (OPTIONAL)
@@ -12,7 +12,11 @@
     - PA13 -> SWDIO
     - PA14 -> SWCLK
     
-2. NRST should be high?
+2. NRST has an internal PULLUP which keeps it high
+   BOOT0 should be low
+   BOOT1 should be high or don't care
+
+3. Remove ST-Link header jumpers (CN3)
 
 3. To program:
    - Windows: STM32 ST-LINK Utility
