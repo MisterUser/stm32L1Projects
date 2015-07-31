@@ -24,3 +24,5 @@
       2. 
       
    - Linux: st-util flash or debug
+      1. start st-util
+      2. gdb.sh or flash_stlinkv2.sh
