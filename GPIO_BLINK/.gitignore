@@ -1,0 +1,14 @@
+src/*.d
+src/*.o
+src/*.elf
+src/implementations/
+src/clean.sh
+src/gdbug.sh
+src/debug_stlinkv2.sh
+src/flash_stlinkv2.sh
+stm32l1xx_conf.h
+Library/
+BlinkingLight.elf
+Makefile.common
+README.md
+src/startscript_stlinkv2.gdb

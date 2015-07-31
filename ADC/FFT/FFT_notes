@@ -1,0 +1,1 @@
+-added -lm in Makefile.common in compile line
