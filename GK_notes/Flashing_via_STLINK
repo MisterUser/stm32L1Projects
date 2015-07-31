@@ -1,0 +1,28 @@
+1. Connect STLINK & uC
+  On STLINK side (SWD header)
+    - Pin 1 -> VDD of external uC -> Connect to same as on uC side
+    - Pin 2 -> SWCLK
+    - Pin 3 -> GND                -> Connect to same as on uC side
+    - Pin 4 -> SWDIO
+    don't need to connect pins 5&6
+    - Pin 5 -> NRST (OPTIONAL)
+    - Pin 6 -> SWO (RESERVED)
+    
+  On uC side
+    - PA13 -> SWDIO
+    - PA14 -> SWCLK
+    
+2. NRST has an internal PULLUP which keeps it high
+   BOOT0 should be low (can be grounded)
+   BOOT1 should be high or don't care (leave it floating, especially if BOOT0 is grounded)
+
+3. Remove ST-Link header jumpers (CN3)
+
+3. To program:
+   - Windows: STM32 ST-LINK Utility
+      1. Target->Connect (This lets you know device is functioning at all/has power/and JTAGs connected)
+      2. 
+      
+   - Linux: st-util flash or debug
+      1. start st-util
+      2. gdb.sh or flash_stlinkv2.sh
