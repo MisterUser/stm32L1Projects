@@ -21,7 +21,9 @@
 3. To program:
    - Windows: STM32 ST-LINK Utility
       1. Target->Connect (This lets you know device is functioning at all/has power/and JTAGs connected)
-      2. 
+      2. get bin from .elf via:
+          arm-none-eabi-objcopy -O binary src.elf src.bin
+      3. Open file in ST-LINK Util, then Target->Program...
       
    - Linux: st-util flash or debug
       1. start st-util
