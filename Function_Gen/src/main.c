@@ -2,11 +2,15 @@
 #include <stm32l1xx_rcc.h>
 #include <stm32l1xx_gpio.h>
 #include "implementations/usart_int_and_q.h"
+#include "implementations/clock_setup.h"
+#include "implementations/hd44780_4bit_lib.h"
 
 void Delay(uint32_t nTime);
 
 
 int main(void){
+
+  clock_setup();
 
   //Enable Peripheral Clocks
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); 
@@ -24,9 +28,20 @@ int main(void){
 
   usart_int_and_q_init();
 
-  //Configure SysTick Timer
-  //Set System Clock to interrupt every ms.
-  if(SysTick_Config(SystemCoreClock / 1000))
+  hd44780_init(N_2LINE,FONT_8);
+
+  hd44780_setCursorPosition(0,0);
+  hd44780_write_string("-F1:OFF");
+  hd44780_setCursorPosition(1,0);
+  hd44780_write_string("-F2:OFF");
+  hd44780_setCursorPosition(2,0);
+  hd44780_write_string("-F3:OFF");
+  hd44780_setCursorPosition(3,0);
+  hd44780_write_string("-F4:OFF");
+
+  //Configure SysTick Timer (in core_cm4.h)
+  //Set System Clock to interrupt every ms. HCLK/8 = 2MHz. Each tick is 500ns
+  if(SysTick_Config(SystemCoreClock/8000))
 	while (1); //If fails, hang in while loop 
 
   char userVal;
@@ -38,9 +53,6 @@ int main(void){
     {
        userVal = usart_w_interrupt_getchar();
 
-       //toggle led
-       GPIO_WriteBit(GPIOB,GPIO_Pin_7,(ledval)? Bit_SET : Bit_RESET);
-       ledval = 1-ledval;
        usart_w_interrupt_putchar('\n');
        usart_w_interrupt_putchar('R');
        usart_w_interrupt_putchar('c');
@@ -49,6 +61,15 @@ int main(void){
        usart_w_interrupt_putchar(':');
        usart_w_interrupt_putchar(userVal);
        usart_w_interrupt_putchar('\n');
+
+       hd44780_write_char(userVal);
+    }
+    else
+    {
+      
+       //toggle led
+       GPIO_WriteBit(GPIOB,GPIO_Pin_6,(ledval)? Bit_SET : Bit_RESET);
+       ledval = 1-ledval;
     }
 
     Delay(5); //wait 250ms
