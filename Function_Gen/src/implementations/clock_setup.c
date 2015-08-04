@@ -5,35 +5,39 @@ void clock_setup()
   //-----------------------System Clock Sources---------------------------//
   // Enable HSI Clock 
   RCC_HSICmd(ENABLE);
-  while (RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET) //! Wait till HSI is ready
+  while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET); //! Wait till HSI is ready
 
   RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI);//SYSCLK now at 16MHz
 
+  //PLL
+  //RCC_PLLCmd(DISABLE);
+  //while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != RESET ){}; //! Wait until off
+ 
+  /* 
+  RCC_PLLConfig(RCC_PLLSource_HSI,RCC_PLLMul_3,RCC_PLLDiv_2);
+
+  RCC_PLLCmd(ENABLE);
+  while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET ){};
+
+  RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+  */
+
   //Turn HSE off
   RCC_HSEConfig(RCC_HSE_OFF);
-  while(RCC_GetFlagStatus(RCC_FLAG_HSERDY) != RESET ) //! Wait until off
+  while(RCC_GetFlagStatus(RCC_FLAG_HSERDY) != RESET ){}; //! Wait until off
 
   //Turn LSE off
   RCC_LSEConfig(RCC_LSE_OFF);
-  while(RCC_GetFlagStatus(RCC_FLAG_LSERDY) != RESET ) //! Wait until off
+  while(RCC_GetFlagStatus(RCC_FLAG_LSERDY) != RESET ){}; //! Wait until off
 
   //Turn LSI off
   RCC_LSICmd(DISABLE);
-  while(RCC_GetFlagStatus(RCC_FLAG_LSIRDY) != RESET ) //! Wait until off
+  while(RCC_GetFlagStatus(RCC_FLAG_LSIRDY) != RESET ){}; //! Wait until off
 
   //Turn MSI off
   RCC_MSICmd(DISABLE);
-  //while(RCC_GetFlagStatus(RCC_FLAG_MSIRDY) != RESET ) //! Wait until off
+  while(RCC_GetFlagStatus(RCC_FLAG_MSIRDY) != RESET ){}; //! Wait until off
 
-  //PLL
-  //RCC_PLLCmd(DISABLE);
-  //while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != RESET ) //! Wait until off
-  
-  /*
-  RCC_PLLConfig(RCC_PLLSource_HSI,RCC_PLLMul_3,RCC_PLLDiv_2);
-  RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
-  RCC_PLLCmd(ENABLE);
-  */
 
   //MCO for UART converter 12Mhz?
   //RCC_MCOConfig(RCC_MCOSource_PLLCLK,RCC_MCODiv_2); 
