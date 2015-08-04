@@ -109,14 +109,17 @@ void hd44780_init(uint8_t dispLines, uint8_t fontSize)
 
    _write_8bit(fsByte);
 
+   __delay_cycles(1);
    // We can only set the number of lines upon initialization (see
    // datasheet, page 27). The status bit cannot be checked otherwise the
    // controller will ignore this command.
    // _write_8bit(line_mode);
 
    hd44780_send_command(HD44780_CMD_DISPLAY_ON);
+   __delay_cycles(1);
    hd44780_send_command(HD44780_CMD_RETURN_HOME);
-   hd44780_send_command(HD44780_CMD_CLEAR_DISPLAY);
+   __delay_cycles(1);
+   //hd44780_send_command(HD44780_CMD_CLEAR_DISPLAY);
 }
 
 /*
@@ -179,6 +182,9 @@ static void _write_8bit(uint8_t data)
 
 static void _write_4bit(uint8_t data)
 {
+     __delay_cycles(1);
+     resetPin=HD44780_EN;
+     __delay_cycles(1);
 
     //set data pins
     //write them before setting EN so that we don't have to worry about their setup/fall/hold times.
@@ -194,6 +200,8 @@ static void _write_4bit(uint8_t data)
     __delay_cycles(1);
 
     resetPin=HD44780_Data; //clear data lines
+
+     __delay_cycles(1);
 }
 
 void __delay_cycles(int cycles)

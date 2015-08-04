@@ -4,6 +4,7 @@
 #include "implementations/usart_int_and_q.h"
 #include "implementations/clock_setup.h"
 #include "implementations/hd44780_4bit_lib.h"
+#include "implementations/dac_signalGen.h"
 
 void Delay(uint32_t nTime);
 
@@ -38,6 +39,8 @@ int main(void){
   hd44780_write_string("-F3:OFF");
   hd44780_setCursorPosition(3,0);
   hd44780_write_string("-F4:OFF");
+  
+  DAC_signalGen_init();
 
   //Configure SysTick Timer (in core_cm4.h)
   //Set System Clock to interrupt every ms. HCLK/8 = 2MHz. Each tick is 500ns
