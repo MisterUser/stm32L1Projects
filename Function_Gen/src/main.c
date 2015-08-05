@@ -5,6 +5,7 @@
 #include "implementations/clock_setup.h"
 #include "implementations/hd44780_4bit_lib.h"
 #include "implementations/dac_signalGen.h"
+#include "implementations/extern_DAC.h"
 
 void Delay(uint32_t nTime);
 
@@ -27,22 +28,14 @@ int main(void){
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
+  //Control pins for DAC Ch1&Ch2
   GPIO_StructInit(&GPIO_InitStructure);
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-  GPIO_StructInit(&GPIO_InitStructure);
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-
 
   usart_int_and_q_init();
 
@@ -57,6 +50,7 @@ int main(void){
   hd44780_setCursorPosition(3,0);
   hd44780_write_string("-F4:OFF");
   
+  external_DAC_setup(); 
   DAC_signalGen_init();
 
   //Configure SysTick Timer (in core_cm4.h)

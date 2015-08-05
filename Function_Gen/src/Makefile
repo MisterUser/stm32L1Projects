@@ -14,7 +14,7 @@ OBJS+= stm32l1xx_usart.o usart_int_and_q.o misc.o
 #LCD
 OBJS+= hd44780_4bit_lib.o
 #DAC
-OBJS+= dac_signalGen.o stm32l1xx_dac.o stm32l1xx_tim.o stm32l1xx_dma.o
+OBJS+= dac_signalGen.o stm32l1xx_dac.o stm32l1xx_tim.o stm32l1xx_dma.o extern_DAC.o
 
 # include common make file
 
