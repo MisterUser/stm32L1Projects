@@ -6,10 +6,17 @@
                       599, 344, 155, 38, 0, 38, 155, 344, 599, 909, 1263, 1647};
 */
 
-const uint8_t Sine8Bit[32] = {
+const uint8_t Sine8Bit_32[32] = {
 	0,1,7,18,34,54,77,101,127,153,177,200,220,236,247,254,
 	255,251,242,228,210,189,165,140,114,87,65,44,26,12,3,1
 };
+
+const uint8_t Sine8Bit_16[16]={0  ,  7, 34, 77,127,177,220,247,
+			       255,242,210,165,114, 65, 26,  3};
+
+
+const uint8_t fourBitSine[16]={8,11,13,14,15,14,12,10,7,4,2,1,0,1,3,5};
+
 
 const uint8_t Escalator8bit[8] = {
 	0x00,//0x08,0x10,0x18,
@@ -94,7 +101,7 @@ void DAC_TIM_Config(void)
 
   /* Time base configuration */
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-  TIM_TimeBaseStructure.TIM_Period = 0x0FFF;//0xFF; //0xFF = 8.2k (without Presclr & CLKDiv)
+  TIM_TimeBaseStructure.TIM_Period = 0x0380;//0xFF; //0xFF = 8.2k (without Presclr & CLKDiv)
   TIM_TimeBaseStructure.TIM_Prescaler = 0x0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -137,9 +144,9 @@ void DAC_signalGen_init(void)
 
    DMA_InitTypeDef            DMA_InitStructure;
    DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR8R1_Address;
-   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Sine8Bit;
+   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Sine8Bit_16;
    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-   DMA_InitStructure.DMA_BufferSize = 32;
+   DMA_InitStructure.DMA_BufferSize = 16;
    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
@@ -171,9 +178,9 @@ void DAC_signalGen_init(void)
    DMA_DeInit(DMA1_Channel3);
 
    DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR8R2_Address;
-   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Rvrs_Escalator8bit;
+   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Escalator8bit;
    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-   DMA_InitStructure.DMA_BufferSize = 32;
+   DMA_InitStructure.DMA_BufferSize = 8;
    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;

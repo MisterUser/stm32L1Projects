@@ -18,14 +18,31 @@ int main(void){
   
   //Configure Pins
   GPIO_InitTypeDef GPIO_InitStructure;
-  GPIO_StructInit(& GPIO_InitStructure );
 
+  GPIO_StructInit(&GPIO_InitStructure);
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+  GPIO_StructInit(&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
 
   usart_int_and_q_init();
 
@@ -51,21 +68,36 @@ int main(void){
 
   while (1) {
     static int ledval = 0;
+    static int F1_on=0;
+    static int F2_on=0;
 
     if(!gk_USART_RX_QueueEmpty())
     {
        userVal = usart_w_interrupt_getchar();
 
-       usart_w_interrupt_putchar('\n');
-       usart_w_interrupt_putchar('R');
-       usart_w_interrupt_putchar('c');
-       usart_w_interrupt_putchar('v');
-       usart_w_interrupt_putchar('d');
-       usart_w_interrupt_putchar(':');
-       usart_w_interrupt_putchar(userVal);
-       usart_w_interrupt_putchar('\n');
-
-       hd44780_write_char(userVal);
+       	if(userVal == '1')
+       	{
+	 GPIO_WriteBit(GPIOA,GPIO_Pin_2,(F1_on)?Bit_SET:Bit_RESET);
+	 F1_on=1-F1_on;
+	}
+	else if(userVal == '2')
+	{
+	 GPIO_WriteBit(GPIOA,GPIO_Pin_3,(F2_on)?Bit_SET:Bit_RESET);
+	 F2_on=1-F2_on;
+	}
+	else
+	{	
+   	   usart_w_interrupt_putchar('\n');
+   	   usart_w_interrupt_putchar('R');
+   	   usart_w_interrupt_putchar('c');
+   	   usart_w_interrupt_putchar('v');
+   	   usart_w_interrupt_putchar('d');
+   	   usart_w_interrupt_putchar(':');
+   	   usart_w_interrupt_putchar(userVal);
+   	   usart_w_interrupt_putchar('\n');
+   
+   	   hd44780_write_char(userVal);
+	}
     }
     else
     {
