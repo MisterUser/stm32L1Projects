@@ -8,6 +8,7 @@
 #include "dac_signalGen.h"
 
 #define ExtDAC_setPin    GPIOC->BSRRL
+#define ExtDAC_resetPin  GPIOC->BSRRH
 
 #define ExtDAC1_PORT 	 GPIOC
 #define ExtDAC1_CLK  	 RCC_AHBPeriph_GPIOC

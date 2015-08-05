@@ -9,6 +9,9 @@ uint8_t dac1_array_current;
 const uint8_t* dac2_array_ptr;
 uint8_t sizeOfarray2;
 uint8_t dac2_array_current;
+volatile uint16_t setMask;
+volatile uint16_t resetMask;
+
 
 GPIO_InitTypeDef GPIO_InitStructure;
 TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
@@ -82,14 +85,17 @@ void TIM9_IRQHandler(void)
     TIM_ClearITPendingBit(TIM9, TIM_IT_Update);
 
     //Set pins according to array
-    //x/t ((GPIO_TypeDef *)0x40020800)->BSRRL
-    //GPIO_WriteBit(ExtDAC1_PORT,ExtDAC1_Pin1_LSB,(pinVal)? Bit_SET : Bit_RESET);
-    //pinVal=1-pinVal;
-    GPIO_WriteBit(ExtDAC1_PORT,ExtDAC1_Pin4_MSB,!!((dac1_array_ptr[dac1_array_current]) & 8));
-    GPIO_WriteBit(ExtDAC1_PORT,ExtDAC1_Pin3,!!((dac1_array_ptr[dac1_array_current]) & 4));
-    GPIO_WriteBit(ExtDAC1_PORT,ExtDAC1_Pin2,!!((dac1_array_ptr[dac1_array_current]) & 2));
-    GPIO_WriteBit(ExtDAC1_PORT,ExtDAC1_Pin1_LSB,!!((dac1_array_ptr[dac1_array_current++]) & 1));
-    //ExtDAC_setPin = ((dac1_array_ptr[dac1_array_current++])&0x0F) << ExtDAC1_PortOffset;
+
+    //--Using STL -> slow
+    //GPIO_WriteBit(ExtDAC1_PORT,ExtDAC1_Pin4_MSB,!!((dac1_array_ptr[dac1_array_current]) & 8));
+    //GPIO_WriteBit(ExtDAC1_PORT,ExtDAC1_Pin3,!!((dac1_array_ptr[dac1_array_current]) & 4));
+    //GPIO_WriteBit(ExtDAC1_PORT,ExtDAC1_Pin2,!!((dac1_array_ptr[dac1_array_current]) & 2));
+    //GPIO_WriteBit(ExtDAC1_PORT,ExtDAC1_Pin1_LSB,!!((dac1_array_ptr[dac1_array_current++]) & 1));
+
+    //--bit write operations, MUCH FASTER than using GPIO_WriteBit()!!!
+    //array access + bitwise & + shift + bitset ~ 4 clock cycles (5 w/ NOT op in reset)
+    ExtDAC_setPin   = ((dac1_array_ptr[dac1_array_current])&0x0F) << ExtDAC1_PortOffset;
+    ExtDAC_resetPin = ((~(dac1_array_ptr[dac1_array_current++]))&0x0F) << ExtDAC1_PortOffset;
     if(dac1_array_current>=sizeOfarray1){dac1_array_current = 0;}
   } 
 }
