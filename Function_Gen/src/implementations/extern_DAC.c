@@ -49,8 +49,10 @@ void external_DAC_setup(void)
    NVIC_Init(&NVIC_InitStructure);
 
    /* Time base configuration */
-   TIM_TimeBaseStructure.TIM_Period = 10;
-   TIM_TimeBaseStructure.TIM_Prescaler = 25;
+   //with TimerCLK = 16MHz, 50 Perio, 5 Prsclr and 4CLKD (=1000) timer should be at 16k, not.  it's at 52.1k
+   //which means timer clock is at 52.1k*1000 = 52.1MHz?
+   TIM_TimeBaseStructure.TIM_Period = 50;
+   TIM_TimeBaseStructure.TIM_Prescaler = 5;
    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV4;
    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 
@@ -61,7 +63,7 @@ void external_DAC_setup(void)
    sizeOfarray1 = 15; 
 
    /* TIM enable counter */
-   TIM_Cmd(TIM9, ENABLE);
+//   TIM_Cmd(TIM9, ENABLE);
    
    /* TIM IT enable */
    TIM_ITConfig(TIM9, TIM_IT_Update, ENABLE);
@@ -106,7 +108,7 @@ void external_DAC_setup(void)
    sizeOfarray2 = 10;
 
    /* TIM enable counter */
-   TIM_Cmd(TIM10, ENABLE);
+ //  TIM_Cmd(TIM10, ENABLE);
 
    /* TIM IT enable */
    TIM_ITConfig(TIM10, TIM_IT_Update, ENABLE);

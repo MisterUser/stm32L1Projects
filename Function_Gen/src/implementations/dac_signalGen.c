@@ -18,15 +18,15 @@ const uint8_t Sine8Bit_16[16]={0  ,  7, 34, 77,127,177,220,247,
 const uint8_t fourBitSine_16[16]={8,11,13,14,15,14,12,10,7,4,2,1,0,1,3,5};
 
 
-const uint8_t Escalator8bit[8] = {
-	0x00,//0x08,0x10,0x18,
-	0x20,//0x28,0x30,0x38,
-        0x40,//0x48,0x50,0x58,
-	0x60,//0x68,0x70,0x78,
-	0x80,//0x88,0x90,0x98,
-	0xA0,//0xA8,0xB0,0xB8,
-	0xC0,//0xC8,0xD0,0xD8,
-	0xE0//,0xE8,0xF0,0xF8
+const uint8_t Escalator8bit_16[16] = {
+	0x00,0x11, //0x08,0x10,0x18,
+	0x22,0x33, //0x28,0x30,0x38,
+        0x44,0x55, //0x48,0x50,0x58,
+	0x66,0x77, //0x68,0x70,0x78,
+	0x88,0x99, //0x88,0x90,0x98,
+	0xAA,0xBB, //0xA8,0xB0,0xB8,
+	0xCC,0xDD, //0xC8,0xD0,0xD8,
+	0xEE,0xFF  //,0xE8,0xF0,0xF8
 };
 
 const uint8_t Rvrs_Escalator8bit[16] = {
@@ -92,8 +92,9 @@ void DAC_TIM_Config(void)
   /* TIM6 TRGO selection */
   TIM_SelectOutputTrigger(TIM6, TIM_TRGOSource_Update);
 
+   //Moved enable commands to main.c
   /* TIM6 enable counter */
-  TIM_Cmd(TIM6, ENABLE);
+  //TIM_Cmd(TIM6, ENABLE);
 
   /* TIM7 Configuration ------------------------------------------------------*/
   /* TIM7 Periph clock enable */
@@ -110,8 +111,9 @@ void DAC_TIM_Config(void)
   /* TIM7 TRGO selection */
   TIM_SelectOutputTrigger(TIM7, TIM_TRGOSource_Update);
 
+   //Moved enable commands to main.c
   /* TIM7 enable counter */
-  TIM_Cmd(TIM7, ENABLE);
+  //TIM_Cmd(TIM7, ENABLE);
 
 }
 
@@ -159,11 +161,12 @@ void DAC_signalGen_init(void)
    DMA_Cmd(DMA1_Channel2, ENABLE);
 
 
+   //Moved enable commands to main.c
    /* Enable DAC Channel1 */
-   DAC_Cmd(DAC_Channel_1, ENABLE);
+   //DAC_Cmd(DAC_Channel_1, ENABLE);
 
    /* Enable DMA for DAC Channel1 */
-   DAC_DMACmd(DAC_Channel_1, ENABLE);
+   //DAC_DMACmd(DAC_Channel_1, ENABLE);
 
    //---------------DAC channel2 Configuration------------------//
    DAC_InitTypeDef            DAC_InitStructure_CH2;
@@ -178,9 +181,9 @@ void DAC_signalGen_init(void)
    DMA_DeInit(DMA1_Channel3);
 
    DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR8R2_Address;
-   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Escalator8bit;
+   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Escalator8bit_16;
    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-   DMA_InitStructure.DMA_BufferSize = 8;
+   DMA_InitStructure.DMA_BufferSize = 16;
    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
@@ -193,11 +196,12 @@ void DAC_signalGen_init(void)
    DMA_Cmd(DMA1_Channel3, ENABLE);
 
 
+   //Moved enable commands to main.c
    // Enable DAC Channel2 //
-   DAC_Cmd(DAC_Channel_2, ENABLE);
+   //DAC_Cmd(DAC_Channel_2, ENABLE);
 
    // Enable DMA for DAC Channel2 //
-   DAC_DMACmd(DAC_Channel_2, ENABLE);
+   //DAC_DMACmd(DAC_Channel_2, ENABLE);
 
 
    /* 

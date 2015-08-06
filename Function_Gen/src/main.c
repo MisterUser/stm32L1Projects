@@ -62,22 +62,91 @@ int main(void){
 
   while (1) {
     static int ledval = 0;
+    //State variables for functions: all functions start off
     static int F1_on=0;
     static int F2_on=0;
+    static int F3_on=0;
+    static int F4_on=0;
+    static int F5_on=0;
+    static int F6_on=0;
+
 
     if(!gk_USART_RX_QueueEmpty())
     {
        userVal = usart_w_interrupt_getchar();
 
-       	if(userVal == '1')
+        if(userVal == '1')
+        {
+	 TIM_Cmd(TIM9, (F1_on)?DISABLE:ENABLE);
+         F1_on=1-F1_on;
+        }
+        else if(userVal == '2')
+        {
+	 TIM_Cmd(TIM10, (F2_on)?DISABLE:ENABLE);
+         F2_on=1-F2_on;
+        }
+
+       	else if(userVal == '3')
        	{
-	 GPIO_WriteBit(GPIOA,GPIO_Pin_2,(F1_on)?Bit_SET:Bit_RESET);
-	 F1_on=1-F1_on;
+	 GPIO_WriteBit(GPIOA,GPIO_Pin_2,(F3_on)?Bit_RESET:Bit_SET);
+	 F3_on=1-F3_on;
 	}
-	else if(userVal == '2')
+	else if(userVal == '4')
 	{
-	 GPIO_WriteBit(GPIOA,GPIO_Pin_3,(F2_on)?Bit_SET:Bit_RESET);
-	 F2_on=1-F2_on;
+	 GPIO_WriteBit(GPIOA,GPIO_Pin_3,(F4_on)?Bit_RESET:Bit_SET);
+	 F4_on=1-F4_on;
+	}
+	else if(userVal == '5')
+	{
+	 if(F5_on)//already on -> disable it
+	 {
+	  DAC_DMACmd(DAC_Channel_1,DISABLE);
+	  DAC_Cmd(DAC_Channel_1,DISABLE);
+	  TIM_Cmd(TIM6, DISABLE);
+	 }
+	 else
+	 {
+          TIM_Cmd(TIM6, ENABLE);
+          DAC_Cmd(DAC_Channel_1,ENABLE);
+	  DAC_DMACmd(DAC_Channel_1,ENABLE);
+	 }
+	 F5_on=1-F5_on;
+	}
+	else if(userVal == '6')
+        {
+         if(F6_on)//already on -> disable it
+         {
+          DAC_DMACmd(DAC_Channel_2,DISABLE);
+          DAC_Cmd(DAC_Channel_2,DISABLE);
+          TIM_Cmd(TIM7, DISABLE);
+         }
+         else
+         {
+          TIM_Cmd(TIM7, ENABLE);
+          DAC_Cmd(DAC_Channel_2,ENABLE);
+          DAC_DMACmd(DAC_Channel_2,ENABLE);
+         }
+         F6_on=1-F6_on;
+        }
+
+	else if(userVal == '0')
+	{
+	 //Turn off external DACs
+	 TIM_Cmd(TIM9, DISABLE);
+	 TIM_Cmd(TIM10,DISABLE);
+
+	 //Close switches - active low because of Schmidt triggers
+	 GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);
+	 GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_SET);
+
+	 //Turn off internal DAC
+	 DAC_DMACmd(DAC_Channel_1, DISABLE);
+	 DAC_DMACmd(DAC_Channel_2, DISABLE);
+	 DAC_Cmd(DAC_Channel_1,DISABLE);
+	 DAC_Cmd(DAC_Channel_2,DISABLE);
+	 TIM_Cmd(TIM6, DISABLE);
+	 TIM_Cmd(TIM7, DISABLE);
+	
 	}
 	else
 	{	
