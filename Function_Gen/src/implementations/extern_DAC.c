@@ -1,7 +1,7 @@
 #include "extern_DAC.h"
 
 //------------Functions-----------------//
-extern const uint8_t fourBitSine_16[16];
+const uint8_t fourBitSine_16[16]={8,11,13,14,15,14,12,10,7,4,2,1,0,1,3,5};
 const uint8_t fourBitTri_10[10]={0,3,6,9,12,15,12,9,6,3};
 const uint8_t fourBitRamp_6[6]={0,3,6,9,12,15};
 

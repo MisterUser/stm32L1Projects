@@ -1,0 +1,20 @@
+1)Can turn on external DACs
+2)Can turn on internal DACs
+3)Can toggle switches
+
+TODO - software
+1)Change Frequencies
+2)Repair LCD
+
+Hardware
+1)Have external DACs with LPF to smooth
+2)switches work
+
+
+
+TODO - hardware
+1) remove DC from external DACs
+2) refine DC blocker for internal DACs
+3) add smoothing LPF for internal DACs
+4) summing amps for Ch1 & 2 w/ DC
+5) summing amp w/DC for multitone channel

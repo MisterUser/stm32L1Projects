@@ -66,4 +66,8 @@ void clock_setup()
   //if APB2 prescalar = 1, TIM9-11 clocks = APB2
   //if APB2 prescalar > 1, TIM9-11 clocks = APB2*2
   RCC_PCLK2Config(RCC_HCLK_Div1);  //APB2 (high speed) = 16MHz [SPI]
+
+  //RCC_ClocksTypeDef RCC_ClockFreq;
+  //RCC_GetClocksFreq(&RCC_ClockFreq);
+
 }

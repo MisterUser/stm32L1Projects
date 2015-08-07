@@ -1,70 +1,47 @@
 #include "dac_signalGen.h"
 
-/*const uint16_t Sine12bit[32] = {
-                      2047, 2447, 2831, 3185, 3498, 3750, 3939, 4056, 4095, 4056,
-                      3939, 3750, 3495, 3185, 2831, 2447, 2047, 1647, 1263, 909,
-                      599, 344, 155, 38, 0, 38, 155, 344, 599, 909, 1263, 1647};
-*/
-
 const uint8_t Sine8Bit_32[32] = {
 	0,1,7,18,34,54,77,101,127,153,177,200,220,236,247,254,
 	255,251,242,228,210,189,165,140,114,87,65,44,26,12,3,1
 };
 
-const uint8_t Sine8Bit_16[16]={0  ,  7, 34, 77,127,177,220,247,
-			       255,242,210,165,114, 65, 26,  3};
+//const uint8_t Sine8Bit_16[16]={0  ,  7, 34, 77,127,177,220,247,255,242,210,165,114, 65, 26,  3};
 
-
-const uint8_t fourBitSine_16[16]={8,11,13,14,15,14,12,10,7,4,2,1,0,1,3,5};
-
-
-const uint8_t Escalator8bit_16[16] = {
-	0x00,0x11, //0x08,0x10,0x18,
-	0x22,0x33, //0x28,0x30,0x38,
-        0x44,0x55, //0x48,0x50,0x58,
-	0x66,0x77, //0x68,0x70,0x78,
-	0x88,0x99, //0x88,0x90,0x98,
-	0xAA,0xBB, //0xA8,0xB0,0xB8,
-	0xCC,0xDD, //0xC8,0xD0,0xD8,
-	0xEE,0xFF  //,0xE8,0xF0,0xF8
+const uint8_t Escalator8bit[32] = {
+	0x00,0x08,0x10,0x18,
+	0x20,0x28,0x30,0x38,
+        0x40,0x48,0x50,0x58,
+	0x60,0x68,0x70,0x78,
+	0x80,0x88,0x90,0x98,
+	0xA0,0xA8,0xB0,0xB8,
+	0xC0,0xC8,0xD0,0xD8,
+	0xE0,0xE8,0xF0,0xF8
 };
 
-const uint8_t Rvrs_Escalator8bit[16] = {
-        0xF8,//0xF0,
-	0xE8,//0xE0,
-	0xD8,//0xD0,
-	0xC8,//0xC0,
-        0xB8,//0xB0,
-	0xA8,//0xA0,
-	0x98,//0x90,
-	0x88,//0x80,
-        0x78,//0x70,
-	0x68,//0x60,
-	0x58,//0x50,
-	0x48,//0x40,
-        0x38,//0x30,
-	0x28,//0x20,
-        0x18,//0x10,
-	0x08//0x00
+const uint8_t Rvrs_Escalator8bit[32] = {
+        0xF8,0xF0,0xE8,0xE0,0xD8,0xD0,0xC8,0xC0,
+        0xB8,0xB0,0xA8,0xA0,0x98,0x90,0x88,0x80,
+        0x78,0x70,0x68,0x60,0x58,0x50,0x48,0x40,
+        0x38,0x30,0x28,0x20,0x18,0x10,0x08,0x00
 };
 
 
 void DAC_Config(void)
 {
-  GPIO_InitTypeDef GPIO_InitStructure;
-
-  /* DMA1 clock enable (to be used with DAC) */
+  // DMA1 clock enable (to be used with DAC) 
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 
-  /* DAC Periph clock enable */
+  // DAC Periph clock enable
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
 
-  /* GPIOA clock enable */
+  // GPIOA clock enable 
+  // Configure PA.04 (DAC_OUT1), PA.05 (DAC_OUT2) as analog 
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
-  /* Configure PA.04 (DAC_OUT1), PA.05 (DAC_OUT2) as analog */
+  GPIO_InitTypeDef GPIO_InitStructure;
+  GPIO_StructInit(&GPIO_InitStructure);
+
   GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_4 | GPIO_Pin_5;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
@@ -72,20 +49,13 @@ void DAC_TIM_Config(void)
 {
   TIM_TimeBaseInitTypeDef    TIM_TimeBaseStructure;
 
-  /* TIM6 Configuration ------------------------------------------------------*/
-  /* TIM6 Periph clock enable */
+  //--------- TIM6 Configuration for Channel 1----------------//
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
 
-  /* Time base configuration */
-  //call TIM_Cmd(0x40001000,0)
-  //set ((TIM_TypeDef*)0x40001000)->ARR = 0xFF
-
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-  //0x0380 is decent sine @16MHz (HSI) ->561Hz
-  //0x0080 is decent @2MHz (MSI)
-  TIM_TimeBaseStructure.TIM_Period = 0x0380;//80 is fastest for sine without sign. distortion ->@16MHz, 500Hz Sine
-  TIM_TimeBaseStructure.TIM_Prescaler = 0x0;
-  TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;
+  TIM_TimeBaseStructure.TIM_Period = 1000/32;
+  TIM_TimeBaseStructure.TIM_Prescaler = 3;
+  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV4;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
 
@@ -97,14 +67,12 @@ void DAC_TIM_Config(void)
   //TIM_Cmd(TIM6, ENABLE);
 
   /* TIM7 Configuration ------------------------------------------------------*/
-  /* TIM7 Periph clock enable */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
 
-  /* Time base configuration */
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-  TIM_TimeBaseStructure.TIM_Period = 0x0380;//0xFF; //0xFF = 8.2k (without Presclr & CLKDiv)
-  TIM_TimeBaseStructure.TIM_Prescaler = 0x0;
-  TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;
+  TIM_TimeBaseStructure.TIM_Period = 1000/32;// Function;//with 16MHz and 16-bit signal -> 1MHz signal. 
+  TIM_TimeBaseStructure.TIM_Prescaler = 15;//PSC+1=15+1=divide by 16 for 1M-1.1k, divide by 4000 for 1Hz-1k
+  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; //This isn't what it seems. Just keep at 1.
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM7, &TIM_TimeBaseStructure);
 
@@ -119,10 +87,10 @@ void DAC_TIM_Config(void)
 
 void DAC_signalGen_init(void)
 {
+   DAC_DeInit();
    DAC_Config();
    DAC_TIM_Config();
-
-   DAC_DeInit();
+/*
    DMA_DeInit(DMA1_Channel1);  
    DMA_DeInit(DMA1_Channel2);  
    DMA_DeInit(DMA1_Channel3);  
@@ -131,8 +99,10 @@ void DAC_signalGen_init(void)
    DMA_Cmd(DMA1_Channel2, DISABLE); 
    DMA_Cmd(DMA1_Channel3, DISABLE); 
    DMA_Cmd(DMA1_Channel4, DISABLE); 
-    
+*/
+
    //---------------DAC channel1 Configuration------------------//
+   //set ((DAC_TypeDef*)0x40007400)->CR &= 0X6
    DAC_InitTypeDef            DAC_InitStructure;
    DAC_InitStructure.DAC_Trigger = DAC_Trigger_T6_TRGO;//TSEL1&TEN1
    DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
@@ -146,9 +116,9 @@ void DAC_signalGen_init(void)
 
    DMA_InitTypeDef            DMA_InitStructure;
    DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR8R1_Address;
-   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Sine8Bit_16;
+   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Escalator8bit;
    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-   DMA_InitStructure.DMA_BufferSize = 16;
+   DMA_InitStructure.DMA_BufferSize = 32;
    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
@@ -169,6 +139,7 @@ void DAC_signalGen_init(void)
    //DAC_DMACmd(DAC_Channel_1, ENABLE);
 
    //---------------DAC channel2 Configuration------------------//
+
    DAC_InitTypeDef            DAC_InitStructure_CH2;
    DAC_InitStructure_CH2.DAC_Trigger = DAC_Trigger_T7_TRGO;
    DAC_InitStructure_CH2.DAC_WaveGeneration = DAC_WaveGeneration_None;
@@ -181,9 +152,9 @@ void DAC_signalGen_init(void)
    DMA_DeInit(DMA1_Channel3);
 
    DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR8R2_Address;
-   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Escalator8bit_16;
+   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Sine8Bit_32;
    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-   DMA_InitStructure.DMA_BufferSize = 16;
+   DMA_InitStructure.DMA_BufferSize = 32;
    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
@@ -206,7 +177,6 @@ void DAC_signalGen_init(void)
 
    /* 
    //------------------TRI------------------------//
-   //very slow, probably not that useful
    DAC_InitStructure.DAC_Trigger = DAC_Trigger_T7_TRGO;
    DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_Triangle;
    DAC_InitStructure.DAC_LFSRUnmask_TriangleAmplitude = DAC_TriangleAmplitude_1023;

@@ -12,7 +12,7 @@ void Delay(uint32_t nTime);
 
 int main(void){
 
-  clock_setup();
+  clock_setup(); //clocks now at 16MHz (SYS,HCLK(AHP),PCLK1(APB1),PCLK2(APB2))
 
   //Enable Peripheral Clocks
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); 
@@ -55,8 +55,10 @@ int main(void){
 
   //Configure SysTick Timer (in core_cm4.h)
   //Set System Clock to interrupt every ms. HCLK/8 = 2MHz. Each tick is 500ns
-  if(SysTick_Config(SystemCoreClock/8000))
-	while (1); //If fails, hang in while loop 
+  //SysTick_Config takes number of ticks before an interrupt 
+  //1ms=1000us, each tick = .5us, so need 2000 ticks
+  if(SysTick_Config(2000)) //This is used to wait for UART (human) input, so can be slow
+  	while (1); //If fails, hang in while loop 
 
   char userVal;
 
@@ -168,9 +170,10 @@ int main(void){
        //toggle led
        GPIO_WriteBit(GPIOB,GPIO_Pin_6,(ledval)? Bit_SET : Bit_RESET);
        ledval = 1-ledval;
+       //delay only happens when no USART data coming in
+       Delay(1); //wait 1ms
     }
 
-    Delay(5); //wait 250ms
   }
 }
 
