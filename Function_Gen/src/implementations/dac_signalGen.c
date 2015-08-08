@@ -191,3 +191,35 @@ void DAC_signalGen_init(void)
 
    */
 }
+
+
+void function_on(int channel)
+{
+  if(channel==1)
+  {
+     TIM_Cmd(TIM6, ENABLE);
+     DAC_Cmd(DAC_Channel_1,ENABLE);
+     DAC_DMACmd(DAC_Channel_1,ENABLE);
+  }
+  else if(channel==2)
+  {
+     TIM_Cmd(TIM7, ENABLE);
+     DAC_Cmd(DAC_Channel_2,ENABLE);
+     DAC_DMACmd(DAC_Channel_2,ENABLE);
+  }
+}
+void function_off(int channel)
+{
+ if(channel==1)
+  {
+     DAC_DMACmd(DAC_Channel_1,DISABLE);
+     DAC_Cmd(DAC_Channel_1,DISABLE);
+     TIM_Cmd(TIM6, DISABLE);
+  }
+  else if(channel==2)
+  {
+     DAC_DMACmd(DAC_Channel_2,DISABLE);
+     DAC_Cmd(DAC_Channel_2,DISABLE);
+     TIM_Cmd(TIM7, DISABLE);
+  }
+}

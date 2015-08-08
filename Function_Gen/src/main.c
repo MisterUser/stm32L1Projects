@@ -61,6 +61,10 @@ int main(void){
   	while (1); //If fails, hang in while loop 
 
   char userVal;
+  char functionNum;
+  uint16_t freq;
+  char Hz_or_kHz; 
+  char functionShape;
 
   while (1) {
     static int ledval = 0;
@@ -77,57 +81,49 @@ int main(void){
     {
        userVal = usart_w_interrupt_getchar();
 
-        if(userVal == '1')
+        if(userVal == '1')//Ch1
         {
-	 TIM_Cmd(TIM9, (F1_on)?DISABLE:ENABLE);
+	 if(F1_on)//already on -> disable it
+	 {
+	  function_off(1);
+	 }
+	 else
+	 {
+	  function_on(1);
+	 }
          F1_on=1-F1_on;
         }
-        else if(userVal == '2')
+        else if(userVal == '2')//Ch2
         {
-	 TIM_Cmd(TIM10, (F2_on)?DISABLE:ENABLE);
+         if(F2_on)//already on -> disable it
+         {
+	  function_off(2);
+         }
+         else
+         {
+	  function_on(2);
+         }
          F2_on=1-F2_on;
         }
 
        	else if(userVal == '3')
        	{
-	 GPIO_WriteBit(GPIOA,GPIO_Pin_2,(F3_on)?Bit_RESET:Bit_SET);
+	 TIM_Cmd(TIM9,(F3_on)?DISABLE:ENABLE);//Ch3
 	 F3_on=1-F3_on;
 	}
 	else if(userVal == '4')
 	{
-	 GPIO_WriteBit(GPIOA,GPIO_Pin_3,(F4_on)?Bit_RESET:Bit_SET);
+	 TIM_Cmd(TIM10,(F4_on)?DISABLE:ENABLE);//Ch4
 	 F4_on=1-F4_on;
 	}
 	else if(userVal == '5')
 	{
-	 if(F5_on)//already on -> disable it
-	 {
-	  DAC_DMACmd(DAC_Channel_1,DISABLE);
-	  DAC_Cmd(DAC_Channel_1,DISABLE);
-	  TIM_Cmd(TIM6, DISABLE);
-	 }
-	 else
-	 {
-          TIM_Cmd(TIM6, ENABLE);
-          DAC_Cmd(DAC_Channel_1,ENABLE);
-	  DAC_DMACmd(DAC_Channel_1,ENABLE);
-	 }
+	 GPIO_WriteBit(GPIOA,GPIO_Pin_2,(F5_on)?Bit_RESET:Bit_SET);//switch for Ch1
 	 F5_on=1-F5_on;
 	}
 	else if(userVal == '6')
         {
-         if(F6_on)//already on -> disable it
-         {
-          DAC_DMACmd(DAC_Channel_2,DISABLE);
-          DAC_Cmd(DAC_Channel_2,DISABLE);
-          TIM_Cmd(TIM7, DISABLE);
-         }
-         else
-         {
-          TIM_Cmd(TIM7, ENABLE);
-          DAC_Cmd(DAC_Channel_2,ENABLE);
-          DAC_DMACmd(DAC_Channel_2,ENABLE);
-         }
+	 GPIO_WriteBit(GPIOA,GPIO_Pin_3,(F6_on)?Bit_RESET:Bit_SET);//switch for Ch2
          F6_on=1-F6_on;
         }
 
@@ -142,13 +138,38 @@ int main(void){
 	 GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_SET);
 
 	 //Turn off internal DAC
-	 DAC_DMACmd(DAC_Channel_1, DISABLE);
-	 DAC_DMACmd(DAC_Channel_2, DISABLE);
-	 DAC_Cmd(DAC_Channel_1,DISABLE);
-	 DAC_Cmd(DAC_Channel_2,DISABLE);
-	 TIM_Cmd(TIM6, DISABLE);
-	 TIM_Cmd(TIM7, DISABLE);
+	 function_off(1);
+	 function_off(2); 
 	
+	}
+	else if(userVal=='f'||userVal=='F')
+	{
+	   freq=0;
+	   //wait for next char to arrive
+	   while(gk_USART_RX_QueueEmpty());
+	   functionNum = usart_w_interrupt_getchar();
+
+           while(gk_USART_RX_QueueEmpty());
+           freq += ((uint16_t)usart_w_interrupt_getchar())*1000;
+           while(gk_USART_RX_QueueEmpty());
+           freq += ((uint16_t)usart_w_interrupt_getchar())*100;
+           while(gk_USART_RX_QueueEmpty());
+           freq += ((uint16_t)usart_w_interrupt_getchar())*10;
+           while(gk_USART_RX_QueueEmpty());
+           freq += ((uint16_t)usart_w_interrupt_getchar());
+	
+           while(gk_USART_RX_QueueEmpty());
+	   Hz_or_kHz= usart_w_interrupt_getchar();
+	  
+	 //  set 
+	
+	}
+	else if(userVal=='s' || userVal=='S')
+	{
+	   //wait for next char to arrive
+           while(gk_USART_RX_QueueEmpty());
+
+           functionNum = usart_w_interrupt_getchar();
 	}
 	else
 	{	

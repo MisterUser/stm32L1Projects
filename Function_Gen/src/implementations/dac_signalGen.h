@@ -15,5 +15,7 @@
 void DAC_Config(void);
 void DAC_TIM_Config(void);
 void DAC_signalGen_init(void);
+void function_on(int channel);
+void function_off(int channel);
 
 #endif

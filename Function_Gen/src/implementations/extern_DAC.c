@@ -49,11 +49,13 @@ void external_DAC_setup(void)
    NVIC_Init(&NVIC_InitStructure);
 
    /* Time base configuration */
-   //with TimerCLK = 16MHz, 50 Perio, 5 Prsclr and 4CLKD (=1000) timer should be at 16k, not.  it's at 52.1k
-   //which means timer clock is at 52.1k*1000 = 52.1MHz?
-   TIM_TimeBaseStructure.TIM_Period = 50;
-   TIM_TimeBaseStructure.TIM_Prescaler = 5;
-   TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV4;
+   //with TimerCLK = 16MHz / Prsclr=16 and 16-bit function -> 62.5kHz >= function
+   //Period: 1=5.87kHz, 65000=1.02Hz (max 65,535)
+   //	     65=1k , 650 = 103Hz, 
+   //	     166=400
+   TIM_TimeBaseStructure.TIM_Period = 1;
+   TIM_TimeBaseStructure.TIM_Prescaler = 15;//+1
+   TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 
    TIM_TimeBaseInit(TIM9, &TIM_TimeBaseStructure);
@@ -148,4 +150,5 @@ void TIM10_IRQHandler(void)
     if(dac2_array_current>=sizeOfarray2){dac2_array_current = 0;}
   }
 }
+
 
