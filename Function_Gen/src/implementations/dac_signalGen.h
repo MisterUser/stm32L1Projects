@@ -17,5 +17,10 @@ void DAC_TIM_Config(void);
 void DAC_signalGen_init(void);
 void function_on(int channel);
 void function_off(int channel);
+/*
+ *set_internal_DAC_freq
+ *  freq must be between 4Hz and 250kHz
+ */
+void set_internal_DAC_freq(char channel,uint16_t freq,char hz_or_khz);
 
 #endif

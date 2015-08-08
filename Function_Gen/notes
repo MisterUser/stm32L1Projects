@@ -5,6 +5,7 @@
 TODO - software
 1)Change Frequencies
 2)Repair LCD
+3)measure interrupt time of TIM9&10 to add into account
 
 Hardware
 1)Have external DACs with LPF to smooth

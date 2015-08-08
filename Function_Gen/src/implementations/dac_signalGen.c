@@ -53,10 +53,10 @@ void DAC_TIM_Config(void)
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
 
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-  TIM_TimeBaseStructure.TIM_Period = 1000/32;
-  TIM_TimeBaseStructure.TIM_Prescaler = 3;
-  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV4;
-  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_Period = 250;//->8MHz/250 with 32-long functino=1kHz 
+  TIM_TimeBaseStructure.TIM_Prescaler = 1;//+1=2 -> 8MHz
+  //TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV4;//TIM6 has no CLKDIV
+  //TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;//TIM6 can only count up
   TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
 
   /* TIM6 TRGO selection */
@@ -70,10 +70,11 @@ void DAC_TIM_Config(void)
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
 
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-  TIM_TimeBaseStructure.TIM_Period = 1000/32;// Function;//with 16MHz and 16-bit signal -> 1MHz signal. 
-  TIM_TimeBaseStructure.TIM_Prescaler = 15;//PSC+1=15+1=divide by 16 for 1M-1.1k, divide by 4000 for 1Hz-1k
-  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; //This isn't what it seems. Just keep at 1.
-  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_Period = 250;// Function;//with 16MHz and 16-bit signal -> 1MHz signal. 
+  TIM_TimeBaseStructure.TIM_Prescaler = 1;//PSC+1=15+1=divide by 16 for 1M-1.1k, divide by 4000 for 1Hz-1k
+  //TIM7has no CLKDIV
+  //TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; //This isn't what it seems. Just keep at 1.
+  //TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;TIM7 can only count up
   TIM_TimeBaseInit(TIM7, &TIM_TimeBaseStructure);
 
   /* TIM7 TRGO selection */
@@ -210,7 +211,7 @@ void function_on(int channel)
 }
 void function_off(int channel)
 {
- if(channel==1)
+  if(channel==1)
   {
      DAC_DMACmd(DAC_Channel_1,DISABLE);
      DAC_Cmd(DAC_Channel_1,DISABLE);
@@ -221,5 +222,34 @@ void function_off(int channel)
      DAC_DMACmd(DAC_Channel_2,DISABLE);
      DAC_Cmd(DAC_Channel_2,DISABLE);
      TIM_Cmd(TIM7, DISABLE);
+  }
+}
+
+void set_internal_DAC_freq(char channel,uint16_t freq,char hz_or_khz)
+{
+  uint32_t freqInHz = freq;
+
+  TIM_TypeDef * timer;
+  if(channel=='1')
+  {
+     timer = TIM6;
+  }
+  else {timer = TIM7;}
+
+  TIM_Cmd(timer, DISABLE);
+  if(hz_or_khz == 'k' || hz_or_khz == 'K')
+  {
+     freqInHz=freqInHz*1000; 
+  }
+     	//250k P=1,125k P=2,83.3kP=3,62.5 P=4,50k  P=5,41.67P=6,35.7 P=7,31.25	8,27.7	9,25 10
+	//22.7,20.8,19.2,17.85,16.67,15.6,14.7,13.9,13.15,12.5
+	//P=25 -> 10k,P=50 -> 5k,P=65,000 -> 3.8Hz
+     //with 8MHz and a 32-length function, can only do 250kHz, but 
+     //timer->PSC=1;//16000000/2=8MHz
+     //timer->ARR=(1+((80000-1)/freq))/32;//ceiling function with /32 for 32-length function
+  if(freqInHz>=4 && freqInHz<=250000)
+  {
+    timer->ARR=250000/freqInHz;//ARR = {1,62500}
+    TIM_Cmd(timer,ENABLE);
   }
 }

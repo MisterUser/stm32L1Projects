@@ -61,9 +61,9 @@ int main(void){
   	while (1); //If fails, hang in while loop 
 
   char userVal;
-  char functionNum;
-  uint16_t freq;
-  char Hz_or_kHz; 
+  volatile char functionNum;
+  volatile uint16_t freq;
+  volatile char Hz_or_kHz; 
   char functionShape;
 
   while (1) {
@@ -150,18 +150,19 @@ int main(void){
 	   functionNum = usart_w_interrupt_getchar();
 
            while(gk_USART_RX_QueueEmpty());
-           freq += ((uint16_t)usart_w_interrupt_getchar())*1000;
+           freq += (((uint16_t)usart_w_interrupt_getchar())-48)*100;
            while(gk_USART_RX_QueueEmpty());
-           freq += ((uint16_t)usart_w_interrupt_getchar())*100;
+           freq += (((uint16_t)usart_w_interrupt_getchar())-48)*10;
            while(gk_USART_RX_QueueEmpty());
-           freq += ((uint16_t)usart_w_interrupt_getchar())*10;
-           while(gk_USART_RX_QueueEmpty());
-           freq += ((uint16_t)usart_w_interrupt_getchar());
+           freq += ((uint16_t)usart_w_interrupt_getchar())-48;
 	
            while(gk_USART_RX_QueueEmpty());
 	   Hz_or_kHz= usart_w_interrupt_getchar();
 	  
-	 //  set 
+	   if(functionNum == '1' || functionNum == '2')
+	   {
+		set_internal_DAC_freq(functionNum,freq,Hz_or_kHz);
+	   } 
 	
 	}
 	else if(userVal=='s' || userVal=='S')
