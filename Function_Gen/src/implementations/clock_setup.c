@@ -70,4 +70,11 @@ void clock_setup()
   //RCC_ClocksTypeDef RCC_ClockFreq;
   //RCC_GetClocksFreq(&RCC_ClockFreq);
 
+  //----------------------------SYSTICK-------------------------//
+  //Configure SysTick Timer (in core_cm4.h)
+  //Set System Clock to interrupt every ms. HCLK/8 = 2MHz. Each tick is 500ns
+  //SysTick_Config takes number of ticks before an interrupt
+  //1ms=1000us, each tick = .5us, so need 2000 ticks
+  if(SysTick_Config(2000)) //This is used to wait for UART (human) input, so c
+        while (1); //If fails, hang in while loop
 }

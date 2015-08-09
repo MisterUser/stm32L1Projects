@@ -39,6 +39,8 @@ int main(void){
 
   usart_int_and_q_init();
 
+  
+  Delay(150); //LCD has to wait 150ms after power on
   hd44780_init(N_2LINE,FONT_8);
 
   hd44780_setCursorPosition(0,0);
@@ -53,12 +55,6 @@ int main(void){
   external_DAC_setup(); 
   DAC_signalGen_init();
 
-  //Configure SysTick Timer (in core_cm4.h)
-  //Set System Clock to interrupt every ms. HCLK/8 = 2MHz. Each tick is 500ns
-  //SysTick_Config takes number of ticks before an interrupt 
-  //1ms=1000us, each tick = .5us, so need 2000 ticks
-  if(SysTick_Config(2000)) //This is used to wait for UART (human) input, so can be slow
-  	while (1); //If fails, hang in while loop 
 
   char userVal;
   volatile char functionNum;

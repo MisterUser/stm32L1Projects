@@ -33,15 +33,18 @@
 
 #define HD44780_CMD_CLEAR_DISPLAY               0x01
 #define HD44780_CMD_RETURN_HOME                 0x02
-#define HD44780_CMD_DECREMENT			0x04
-#define HD44780_CMD_INCREMENT			0x06
+//#define HD44780_CMD_DECREMENT			0x04
+//#define HD44780_CMD_INCREMENT			0x06
+#define HD44780_CMD_ENTRY_MODE_SET		0x04
 #define HD44780_CMD_DISPLAY_SHIFT_ON            0x07
 #define HD44780_CMD_DISPLAY_SHIFT_OFF           0x06
-#define HD44780_CMD_DISPLAY_ON_CURSOR_BLINK     0x0F
-#define HD44780_CMD_DISPLAY_ON_BLINK            0x0D
-#define HD44780_CMD_DISPLAY_ON_CURSOR           0x0E
-#define HD44780_CMD_DISPLAY_ON                  0x0C
-#define HD44780_CMD_DISPLAY_OFF                 0x08
+
+//when bit 4 = 1, then bit 3=display, bit 2=cursor, bit 3=blink
+#define HD44780_CMD_DISPLAY_OFF                 0x08 //0b1000
+#define HD44780_CMD_DISPLAY_ON                  0x0C //0b1100
+#define HD44780_CMD_DISPLAY_ON_CURSOR_NO_BLINK  0x0E //0b1110
+#define HD44780_CMD_DISPLAY_ON_CURSOR_BLINK     0x0F //0b1111
+//#define HD44780_CMD_DISPLAY_ON_BLINK            0x0D
 #define HD44780_CMD_DISPLAY_SHIFT_RIGHT         0x1C
 #define HD44780_CMD_DISPLAY_SHIFT_LEFT          0x18
 #define HD44780_CMD_MOVE_CURSOR_RIGHT           0x14
@@ -53,7 +56,7 @@
 #define DL_4BITS				0x00	// sets data length to 4 bits
 #define N_2LINE					0x08	// sets the number of lines to 2
 #define N_1LINE					0x00	// sets the number of lines to 1
-#define FONT_10					0x4	// sets the font to 5x10 dots
+#define FONT_10					0x04	// sets the font to 5x10 dots
 #define FONT_8					0x00	// sets the font to 5x8 dots
 
 #define IS_LCD_ROW(ROW) (((ROW) == 0)|((ROW) == 1)|((ROW) == 2)|((ROW) == 3))

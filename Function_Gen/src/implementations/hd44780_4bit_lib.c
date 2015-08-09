@@ -107,19 +107,11 @@ void hd44780_init(uint8_t dispLines, uint8_t fontSize)
 
    fsByte = (FUNCTION_SET | DL_4BITS | dispLines | fontSize);
 
-   _write_8bit(fsByte);
-
-   __delay_cycles(1);
-   // We can only set the number of lines upon initialization (see
-   // datasheet, page 27). The status bit cannot be checked otherwise the
-   // controller will ignore this command.
-   // _write_8bit(line_mode);
+   hd44780_send_command(fsByte);
 
    hd44780_send_command(HD44780_CMD_DISPLAY_ON);
-   __delay_cycles(1);
    hd44780_send_command(HD44780_CMD_RETURN_HOME);
-   __delay_cycles(1);
-   //hd44780_send_command(HD44780_CMD_CLEAR_DISPLAY);
+   hd44780_send_command(HD44780_CMD_CLEAR_DISPLAY);
 }
 
 /*
@@ -131,6 +123,7 @@ void hd44780_send_command(uint8_t c)
 {
     resetPin=HD44780_RS; 
     _write_8bit(c);
+    __delay_cycles(100);
 }
 
 /*void hd44780_write_special_char(uint8_t c)
@@ -148,6 +141,7 @@ void hd44780_write_char(char c)
     setPin=HD44780_RS;
     _write_8bit(c);
     resetPin=HD44780_RS;
+    __delay_cycles(100);
 }
 
 void hd44780_write_string(char *str)
