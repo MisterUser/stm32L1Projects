@@ -28,7 +28,7 @@ int main(void){
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-  //Control pins for DAC Ch1&Ch2
+  //Control pins for DAC Ch1&Ch2 switches
   GPIO_StructInit(&GPIO_InitStructure);
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
@@ -159,6 +159,10 @@ int main(void){
 	   {
 		set_internal_DAC_freq(functionNum,freq,Hz_or_kHz);
 	   } 
+	   else if(functionNum == '3' || functionNum == '4')
+	   {
+		set_external_DAC_freq(functionNum,freq,Hz_or_kHz);
+	   }
 	
 	}
 	else if(userVal=='s' || userVal=='S')

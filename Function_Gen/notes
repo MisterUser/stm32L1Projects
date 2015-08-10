@@ -1,11 +1,15 @@
 1)Can turn on external DACs
 2)Can turn on internal DACs
 3)Can toggle switches
+4)LCD functional
+5)Change Frequencies (not perfectly for Ch3&4 because of interrupt delay)
+
 
 TODO - software
-1)Change Frequencies
-2)Repair LCD
-3)measure interrupt time of TIM9&10 to add into account
+2)change waveform shape
+3)measure interrupt time of TIM9&10 to add into account (~9.4us)
+4)update LCD
+5)square waves with varying duty cycle
 
 Hardware
 1)Have external DACs with LPF to smooth
@@ -19,3 +23,5 @@ TODO - hardware
 3) add smoothing LPF for internal DACs
 4) summing amps for Ch1 & 2 w/ DC
 5) summing amp w/DC for multitone channel
+6) UART chip
+7) voltage regulator

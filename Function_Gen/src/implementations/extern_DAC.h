@@ -27,5 +27,12 @@
 #define ExtDAC2_PortOffset 6
 
 void external_DAC_setup(void);
+/*
+ *set_internal_DAC_freq
+ *  freq must be between 4Hz and 250kHz
+ */
+void set_external_DAC_freq(char channel,uint16_t freq,char hz_or_khz);
+
+
 
 #endif
