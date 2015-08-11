@@ -25,6 +25,17 @@ const uint8_t Rvrs_Escalator8bit[32] = {
         0x38,0x30,0x28,0x20,0x18,0x10,0x08,0x00
 };
 
+const uint8_t Triangle_8bit[32] = {
+	0x00,0x10,0x20,0x30,
+        0x40,0x50,0x60,0x70,
+	0x80,0x90,0xA0,0xB0,
+	0xC0,0xD0,0xE0,0xF0,
+	0xFF,0xF0,0xE0,0xD0,
+	0xC0,0xB0,0xA0,0x90,
+	0x80,0x70,0x60,0x50,
+	0x40,0x30,0x20,0x10
+};
+
 
 void DAC_Config(void)
 {
@@ -252,4 +263,54 @@ void set_internal_DAC_freq(char channel,uint16_t freq,char hz_or_khz)
     timer->ARR=250000/freqInHz;//ARR = {1,62500}
     TIM_Cmd(timer,ENABLE);
   }
+}
+
+void set_internal_DAC_shape(char channel, char functionShape)
+{
+    TIM_TypeDef* timer;
+    DMA_Channel_TypeDef*  DMA_ch;
+    uint32_t DAC_ch;
+
+    if(channel=='1')
+    {
+	timer=TIM6;	
+	DAC_ch=DAC_Channel_1;	
+	DMA_ch=DMA1_Channel2;
+    }
+    else if(channel=='2')
+    {
+	timer=TIM7;
+	DAC_ch=DAC_Channel_2;	
+        DMA_ch=DMA1_Channel3;
+    }
+    else {return;}
+
+     //first disable DMA, DAC, and TIM
+     DAC_DMACmd(DAC_ch,DISABLE);
+     DAC_Cmd(DAC_ch,DISABLE);
+     DMA_Cmd(DMA_ch, DISABLE);
+     TIM_Cmd(timer, DISABLE);
+
+     switch(functionShape)
+     {
+     	case 'S':
+	  DMA_ch->CMAR=(uint32_t)&Sine8Bit_32;
+	break;
+	case 'E':
+	  DMA_ch->CMAR=(uint32_t)&Escalator8bit;
+	break;
+	case 'R':
+	  DMA_ch->CMAR=(uint32_t)&Rvrs_Escalator8bit;
+	break;
+	case 'T':
+	  DMA_ch->CMAR=(uint32_t)&Triangle_8bit;
+	break;
+	default:
+	  return;
+     }
+     //lastly enable TIM, DAC, DMA
+     TIM_Cmd(timer, ENABLE);
+     DMA_Cmd(DMA_ch, ENABLE);
+     DAC_Cmd(DAC_ch,ENABLE);
+     DAC_DMACmd(DAC_ch,ENABLE);
 }

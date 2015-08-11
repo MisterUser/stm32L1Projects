@@ -7,6 +7,42 @@
 #include "implementations/dac_signalGen.h"
 #include "implementations/extern_DAC.h"
 
+//-------------Locals-------------//
+  //Function States
+uint8_t F1_on;
+uint8_t F2_on;
+uint8_t F3_on;
+uint8_t F4_on;
+uint8_t F5_on;
+uint8_t F6_on;
+
+char F1_shape;
+char F2_shape;
+char F3_shape;
+char F4_shape;
+
+uint16_t F1_freq;
+uint16_t F2_freq;
+uint16_t F3_freq;
+uint16_t F4_freq;
+
+char F1_Hz_or_kHz;
+char F2_Hz_or_kHz;
+char F3_Hz_or_kHz;
+char F4_Hz_or_kHz;
+
+static int ledval = 0;
+
+
+  //USART
+volatile char userVal;
+volatile char functionNum;
+volatile uint16_t freq;
+volatile char Hz_or_kHz; 
+volatile char functionShape;
+
+
+//------------Declarations----------//
 void Delay(uint32_t nTime);
 
 
@@ -29,48 +65,49 @@ int main(void){
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
   //Control pins for DAC Ch1&Ch2 switches
-  GPIO_StructInit(&GPIO_InitStructure);
+  //GPIO_StructInit(&GPIO_InitStructure);
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
+  //GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  //GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  //GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  //GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
   usart_int_and_q_init();
-
   
   Delay(150); //LCD has to wait 150ms after power on
-  hd44780_init(N_2LINE,FONT_8);
 
-  hd44780_setCursorPosition(0,0);
-  hd44780_write_string("-F1:OFF");
-  hd44780_setCursorPosition(1,0);
-  hd44780_write_string("-F2:OFF");
-  hd44780_setCursorPosition(2,0);
-  hd44780_write_string("-F3:OFF");
-  hd44780_setCursorPosition(3,0);
-  hd44780_write_string("-F4:OFF");
+  hd44780_init(N_2LINE,FONT_8);
   
   external_DAC_setup(); 
+
   DAC_signalGen_init();
 
+  //all functions start off
+  F1_on=0;
+  F2_on=0;
+  F3_on=0;
+  F4_on=0;
+  F5_on=0;
+  F6_on=0;
+  
+  F1_shape='E';
+  F2_shape='S';
+  F3_shape='S';
+  F4_shape='T';
+  
+  F1_freq=1;
+  F2_freq=1;
+  F3_freq=1;
+  F4_freq=1;
+  
+  F1_Hz_or_kHz='K';
+  F2_Hz_or_kHz='K';
+  F3_Hz_or_kHz='K';
+  F4_Hz_or_kHz='K';
 
-  char userVal;
-  volatile char functionNum;
-  volatile uint16_t freq;
-  volatile char Hz_or_kHz; 
-  char functionShape;
 
   while (1) {
-    static int ledval = 0;
-    //State variables for functions: all functions start off
-    static int F1_on=0;
-    static int F2_on=0;
-    static int F3_on=0;
-    static int F4_on=0;
-    static int F5_on=0;
-    static int F6_on=0;
 
 
     if(!gk_USART_RX_QueueEmpty())
@@ -155,22 +192,62 @@ int main(void){
            while(gk_USART_RX_QueueEmpty());
 	   Hz_or_kHz= usart_w_interrupt_getchar();
 	  
-	   if(functionNum == '1' || functionNum == '2')
+	   switch(functionNum)
 	   {
-		set_internal_DAC_freq(functionNum,freq,Hz_or_kHz);
-	   } 
-	   else if(functionNum == '3' || functionNum == '4')
-	   {
-		set_external_DAC_freq(functionNum,freq,Hz_or_kHz);
+ 		case '1': 
+		  F1_freq=freq;
+		  F1_Hz_or_kHz=Hz_or_kHz;
+		  set_internal_DAC_freq(functionNum,freq,Hz_or_kHz);
+		break;
+		case '2':
+		  F2_freq=freq;
+		  F2_Hz_or_kHz=Hz_or_kHz;
+		  set_internal_DAC_freq(functionNum,freq,Hz_or_kHz);
+		break;
+	   	case '3':
+		  F3_freq=freq;
+		  F3_Hz_or_kHz=Hz_or_kHz;
+		  set_external_DAC_freq(functionNum,freq,Hz_or_kHz);
+		break;
+		case '4':
+		  F4_freq=freq;
+		  F4_Hz_or_kHz=Hz_or_kHz;
+		  set_external_DAC_freq(functionNum,freq,Hz_or_kHz);
+		break;
+		default:
+		break;
 	   }
 	
 	}
 	else if(userVal=='s' || userVal=='S')
 	{
-	   //wait for next char to arrive
            while(gk_USART_RX_QueueEmpty());
-
            functionNum = usart_w_interrupt_getchar();
+
+	   while(gk_USART_RX_QueueEmpty());
+	   functionShape=usart_w_interrupt_getchar();   
+
+           switch(functionNum)
+	   {
+		case '1':
+	   	   F1_shape=functionShape;	
+		   set_internal_DAC_shape(functionNum,functionShape);
+		break;
+		case '2':
+	   	   F2_shape=functionShape;	
+		   set_internal_DAC_shape(functionNum,functionShape);
+		break;
+		case '3':
+	   	   F3_shape=functionShape;	
+		   set_external_DAC_shape(functionNum,functionShape);
+		break;
+		case '4':
+	   	   F4_shape=functionShape;	
+		   set_external_DAC_shape(functionNum,functionShape);
+		break;
+		default:
+		break;
+	   }
 	}
 	else
 	{	

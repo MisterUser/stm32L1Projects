@@ -112,6 +112,15 @@ void hd44780_init(uint8_t dispLines, uint8_t fontSize)
    hd44780_send_command(HD44780_CMD_DISPLAY_ON);
    hd44780_send_command(HD44780_CMD_RETURN_HOME);
    hd44780_send_command(HD44780_CMD_CLEAR_DISPLAY);
+
+   hd44780_setCursorPosition(0,0);
+   hd44780_write_string("-F1:OFF");
+   hd44780_setCursorPosition(1,0);
+   hd44780_write_string("-F2:OFF");
+   hd44780_setCursorPosition(2,0);
+   hd44780_write_string("-F3:OFF");
+   hd44780_setCursorPosition(3,0);
+   hd44780_write_string("-F4:OFF");
 }
 
 /*
