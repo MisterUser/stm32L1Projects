@@ -44,6 +44,91 @@ static void _write_8bit(uint8_t);
 //Internal file-scope variables
 int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
 
+uint8_t SineShape1[8] = {
+  0b00000,
+  0b00000,
+  0b01110,
+  0b11011,
+  0b10001,
+  0b10000,
+  0b00000,
+  0b00000
+};
+
+uint8_t SineShape2[8] = {
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00001,
+  0b10001,
+  0b11011,
+  0b01110,
+  0b00000
+};
+
+uint8_t TriShape1[8] = {
+  0b00000,
+  0b00000,
+  0b00001,
+  0b00011,
+  0b00110,
+  0b01100,
+  0b11000,
+  0b10000
+};
+uint8_t TriShape2[8] = {
+  0b00000,
+  0b10000,
+  0b11000,
+  0b01100,
+  0b00110,
+  0b00011,
+  0b00001,
+  0b00000
+};
+uint8_t RampShape1[8] = {
+  0b00000,
+  0b00000,
+  0b00000,
+  0b00001,
+  0b00011,
+  0b00110,
+  0b01100,
+  0b11000
+};
+
+uint8_t RampShape2[8] = {
+  0b00100,
+  0b01100,
+  0b11100,
+  0b10100,
+  0b00100,
+  0b00100,
+  0b00100,
+  0b00100
+};
+
+uint8_t RevRampShape1[8] = {
+  0b00100,
+  0b00110,
+  0b00111,
+  0b00101,
+  0b00100,
+  0b00100,
+  0b00100,
+  0b00100
+};
+
+uint8_t RevRampShape2[8] = {
+  0b00000,
+  0b00000,
+  0b00000,
+  0b10000,
+  0b11000,
+  0b01100,
+  0b00110,
+  0b00011
+};
 
 
 void hd44780_init(uint8_t dispLines, uint8_t fontSize)
@@ -113,8 +198,29 @@ void hd44780_init(uint8_t dispLines, uint8_t fontSize)
    hd44780_send_command(HD44780_CMD_RETURN_HOME);
    hd44780_send_command(HD44780_CMD_CLEAR_DISPLAY);
 
+   __delay_cycles(1500);
+
+   create_special_char(0,SineShape1);
+   create_special_char(1,SineShape2);
+   create_special_char(2,TriShape1);
+   create_special_char(3,TriShape2);
+   create_special_char(4,RampShape1);
+   create_special_char(5,RampShape2);
+   create_special_char(6,RevRampShape1);
+   create_special_char(7,RevRampShape2);
+
    hd44780_setCursorPosition(0,0);
    hd44780_write_string("-F1:OFF");
+/*
+   hd44780_write_char(0x00);
+   hd44780_write_char(0x01);
+   hd44780_write_char(0x02);
+   hd44780_write_char(0x03);
+   hd44780_write_char(0x04);
+   hd44780_write_char(0x05);
+   hd44780_write_char(0x06);
+   hd44780_write_char(0x07);
+*/
    hd44780_setCursorPosition(1,0);
    hd44780_write_string("-F2:OFF");
    hd44780_setCursorPosition(2,0);
@@ -133,6 +239,17 @@ void hd44780_send_command(uint8_t c)
     resetPin=HD44780_RS; 
     _write_8bit(c);
     __delay_cycles(100);
+}
+
+void create_special_char(uint8_t location, uint8_t charmap[])
+{
+  location &= 0x7; //make sure to set bit 4 to 0, since only have 7 locations
+  hd44780_send_command(HD44780_CMD_SETCGRAMADDR | (location << 3));
+  int charmap_i=0;
+  for (; charmap_i<8; charmap_i++) {
+    hd44780_write_char(charmap[charmap_i]);
+  }
+  __delay_cycles(100);
 }
 
 /*void hd44780_write_special_char(uint8_t c)

@@ -49,6 +49,7 @@
 #define HD44780_CMD_DISPLAY_SHIFT_LEFT          0x18
 #define HD44780_CMD_MOVE_CURSOR_RIGHT           0x14
 #define HD44780_CMD_MOVE_CURSOR_LEFT            0x10
+#define HD44780_CMD_SETCGRAMADDR		0x40
 #define HD44780_CMD_SETDDRAMADDR		0x80
 
 #define FUNCTION_SET				0x20	// sets the Function set bit, DB5

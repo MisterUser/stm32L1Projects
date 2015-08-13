@@ -3,12 +3,14 @@
 3)Can toggle switches
 4)LCD functional
 5)Change Frequencies (not perfectly for Ch3&4 because of interrupt delay)
-
+6)change waveform shape
+7)measure interrupt time of TIM9&10 to add into account (~9.4us)
 
 TODO - software
-2)change waveform shape
-3)measure interrupt time of TIM9&10 to add into account (~9.4us)
 4)update LCD
+   -for shape change
+   -for freq change
+   -for switches
 5)square waves with varying duty cycle
 
 Hardware

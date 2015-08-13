@@ -4,6 +4,7 @@
 const uint8_t fourBitSine_16[16]={8,11,13,14,15,14,12,10,7,4,2,1,0,1,3,5};
 const uint8_t fourBitTri_15[15]={1,3,5,7,9,11,13,15,13,11,9,7,5,3,1};
 const uint8_t fourBitEscalator_16[16]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+const uint8_t fourBitRevEscalator_16[16]={15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0};
 
 
 //------Local variables------//
@@ -182,6 +183,10 @@ void set_external_DAC_shape(char channel,char shape)
          dac1_array_ptr=&fourBitTri_15[0];
          lastOfarray1=14;
 	break;
+	case 'R':
+         dac1_array_ptr=&fourBitRevEscalator_16[0];
+         lastOfarray1=15;
+        break;
 	default:
 	break;
      }
@@ -203,6 +208,10 @@ void set_external_DAC_shape(char channel,char shape)
          dac2_array_ptr=&fourBitTri_15[0];
          lastOfarray2=14;
 	break;
+	case 'R':
+         dac2_array_ptr=&fourBitRevEscalator_16[0];
+         lastOfarray2=15;
+        break;
 	default:
 	break;
      }
