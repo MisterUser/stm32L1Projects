@@ -208,9 +208,16 @@ void hd44780_init(uint8_t dispLines, uint8_t fontSize)
    create_special_char(5,RampShape2);
    create_special_char(6,RevRampShape1);
    create_special_char(7,RevRampShape2);
+   __delay_cycles(2000);
 
    hd44780_setCursorPosition(0,0);
    hd44780_write_string("-F1:OFF");
+   hd44780_setCursorPosition(1,0);
+   hd44780_write_string("-F2:OFF");
+   hd44780_setCursorPosition(2,0);
+   hd44780_write_string("-F3:OFF");
+   hd44780_setCursorPosition(3,0);
+   hd44780_write_string("-F4:OFF");
 /*
    hd44780_write_char(0x00);
    hd44780_write_char(0x01);
@@ -221,12 +228,6 @@ void hd44780_init(uint8_t dispLines, uint8_t fontSize)
    hd44780_write_char(0x06);
    hd44780_write_char(0x07);
 */
-   hd44780_setCursorPosition(1,0);
-   hd44780_write_string("-F2:OFF");
-   hd44780_setCursorPosition(2,0);
-   hd44780_write_string("-F3:OFF");
-   hd44780_setCursorPosition(3,0);
-   hd44780_write_string("-F4:OFF");
 }
 
 /*

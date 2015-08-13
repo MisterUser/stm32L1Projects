@@ -49,7 +49,7 @@ volatile char functionShape;
 
 //------------Declarations----------//
 void Delay(uint32_t nTime);
-void print_freq(uint8_t rowNum, char* freq_str[], char hz_or_k);
+void print_freq(uint8_t rowNum, char freq_str[], char hz_or_k);
 void print_shape(uint8_t rowNum, char shape);
 
 int main(void){
@@ -203,18 +203,36 @@ int main(void){
 	 }
 	 F4_on=1-F4_on;
 	}
-	else if(userVal == '5')
+	else if(userVal == '5')//switch for Ch1 
 	{
-	 GPIO_WriteBit(GPIOA,GPIO_Pin_2,(F5_on)?Bit_RESET:Bit_SET);//switch for Ch1
-	 hd44780_setCursorPosition(0,0);
-         hd44780_write_string("+");
+	 if(F5_on)//already ON, turn it off
+	 {
+	   GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);//high to Schmitt trig -> inverted to LOW
+	   hd44780_setCursorPosition(0,0);
+           hd44780_write_string("-");
+	 }
+	 else
+	 {
+	   GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_RESET);//LOW to Schmitt trig -> inverted to HIGH ->NMOS ON
+           hd44780_setCursorPosition(0,0);
+           hd44780_write_string("+");
+	 }
 	 F5_on=1-F5_on;
 	}
-	else if(userVal == '6')
+	else if(userVal == '6')//switch for Ch2
         {
-	 GPIO_WriteBit(GPIOA,GPIO_Pin_3,(F6_on)?Bit_RESET:Bit_SET);//switch for Ch2
-	 hd44780_setCursorPosition(1,0);
-         hd44780_write_string("+");
+	 if(F6_on)
+	 {
+	   GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_SET);//HIGH->Schmitt->LOW->NMOS OFF
+	   hd44780_setCursorPosition(1,0);
+           hd44780_write_string("-");
+	 }
+	 else 
+	 {
+	   GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_RESET);//LOW->Schmitt->HIGH->NMOS OFF
+	   hd44780_setCursorPosition(1,0);
+           hd44780_write_string("+");
+	 }
          F6_on=1-F6_on;
         }
 
@@ -235,7 +253,7 @@ int main(void){
 	 hd44780_send_command(HD44780_CMD_RETURN_HOME);
 	 hd44780_send_command(HD44780_CMD_CLEAR_DISPLAY);
 	
-	 Delay(1); 
+	 Delay(30); 
 
 	 hd44780_setCursorPosition(0,0);
 	 hd44780_write_string("-F1:OFF");
@@ -319,6 +337,7 @@ int main(void){
 		default:
 		break;
 	   }
+	   print_freq(((uint8_t)functionNum)-48-1, temp_freq_bin, Hz_or_kHz);//-48 to convert to function num and -1 for row number
 	
 	}
 	else if(userVal=='s' || userVal=='S')
@@ -351,6 +370,7 @@ int main(void){
 		default:
 		break;
 	   }
+	   print_shape(((uint8_t)functionNum)-48-1, functionShape);
 	}
 	else
 	{	
@@ -379,10 +399,14 @@ int main(void){
   }
 }
 
-void print_freq(uint8_t rowNum, char*  freq_str[], char hz_or_k)
+void print_freq(uint8_t rowNum, char  freq_str[], char hz_or_k)
 {
     hd44780_setCursorPosition(rowNum,10);
-    hd44780_write_string(freq_str);
+    int fsiter=0;
+    for(;fsiter<3;fsiter++)
+    {
+       hd44780_write_char(freq_str[fsiter]);
+    }
     hd44780_write_char(' ');
     if(hz_or_k=='k'){hd44780_write_char(hz_or_k);}
     else{hd44780_write_char(' ');}

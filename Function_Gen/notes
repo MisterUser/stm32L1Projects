@@ -1,3 +1,4 @@
+Software
 1)Can turn on external DACs
 2)Can turn on internal DACs
 3)Can toggle switches
@@ -5,13 +6,20 @@
 5)Change Frequencies (not perfectly for Ch3&4 because of interrupt delay)
 6)change waveform shape
 7)measure interrupt time of TIM9&10 to add into account (~9.4us)
-
-TODO - software
-4)update LCD
+8)update LCD
+   -when function is turned on or off
    -for shape change
    -for freq change
    -for switches
+
+TODO - software
 5)square waves with varying duty cycle
+
+
+
+
+
+
 
 Hardware
 1)Have external DACs with LPF to smooth
