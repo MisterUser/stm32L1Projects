@@ -12,15 +12,14 @@ void clock_setup()
   //PLL
   //RCC_PLLCmd(DISABLE);
   //while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != RESET ){}; //! Wait until off
- 
-  /* 
-  RCC_PLLConfig(RCC_PLLSource_HSI,RCC_PLLMul_3,RCC_PLLDiv_2);
+
+/*Turn the PLL on for MCO!!! 
+  RCC_PLLConfig(RCC_PLLSource_HSI,RCC_PLLMul_3,RCC_PLLDiv_4);
 
   RCC_PLLCmd(ENABLE);
   while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET ){};
-
-  RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
-  */
+*/
+  //RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
 
   //Turn HSE off
   RCC_HSEConfig(RCC_HSE_OFF);
@@ -40,8 +39,21 @@ void clock_setup()
 
 
   //MCO for UART converter 12Mhz?
-  //RCC_MCOConfig(RCC_MCOSource_PLLCLK,RCC_MCODiv_2); 
+/* It works!
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_MCO);
+  
+  GPIO_InitTypeDef GPIO_InitStructure;
+  GPIO_StructInit(&GPIO_InitStructure);
 
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+  RCC_MCOConfig(RCC_MCOSource_PLLCLK,RCC_MCODiv_1); //12MHz
+*/
 
 
   //-----------------------Peripheral Clock Sources----------------------//
