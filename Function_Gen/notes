@@ -24,7 +24,7 @@ TODO - software
 Hardware
 1)Have external DACs with LPF to smooth
 2)switches work
-
+3) UART chip with clock from uC
 
 
 TODO - hardware
@@ -33,5 +33,4 @@ TODO - hardware
 3) add smoothing LPF for internal DACs
 4) summing amps for Ch1 & 2 w/ DC
 5) summing amp w/DC for multitone channel
-6) UART chip
 7) voltage regulator

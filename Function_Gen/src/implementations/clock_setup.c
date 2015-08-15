@@ -9,17 +9,21 @@ void clock_setup()
 
   RCC_SYSCLKConfig(RCC_SYSCLKSource_HSI);//SYSCLK now at 16MHz
 
+
+
   //PLL
   //RCC_PLLCmd(DISABLE);
   //while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != RESET ){}; //! Wait until off
 
-/*Turn the PLL on for MCO!!! 
-  RCC_PLLConfig(RCC_PLLSource_HSI,RCC_PLLMul_3,RCC_PLLDiv_4);
+  //Turn the PLL on for MCO!!! 
+  RCC_PLLConfig(RCC_PLLSource_HSI,RCC_PLLMul_3,RCC_PLLDiv_4);//16*3/4 = 12MHz
 
   RCC_PLLCmd(ENABLE);
   while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET ){};
-*/
+
   //RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+
+
 
   //Turn HSE off
   RCC_HSEConfig(RCC_HSE_OFF);
@@ -39,7 +43,7 @@ void clock_setup()
 
 
   //MCO for UART converter 12Mhz?
-/* It works!
+  // It works!
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_MCO);
   
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -53,7 +57,6 @@ void clock_setup()
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
   RCC_MCOConfig(RCC_MCOSource_PLLCLK,RCC_MCODiv_1); //12MHz
-*/
 
 
   //-----------------------Peripheral Clock Sources----------------------//
