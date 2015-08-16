@@ -36,6 +36,19 @@ char F2_Hz_or_kHz;
 char F3_Hz_or_kHz;
 char F4_Hz_or_kHz;
 
+uint8_t Pulse_on;
+uint16_t Pulse_freq;
+char Pulse_freq_str[3]="001";
+char Pulse_H_or_k;
+char Pulse_dutyCycle;
+
+/*
+char F1_dutyCycle;
+char F2_dutyCycle;
+char F3_dutyCycle;
+char F4_dutyCycle;
+*/
+
 static int ledval = 0;
 
 
@@ -45,12 +58,14 @@ volatile char functionNum;
 volatile uint16_t freq;
 volatile char Hz_or_kHz; 
 volatile char functionShape;
+//volatile char dutyCycle;
 
 
 //------------Declarations----------//
 void Delay(uint32_t nTime);
 void print_freq(uint8_t rowNum, char freq_str[], char hz_or_k);
 void print_shape(uint8_t rowNum, char shape);
+void print_duty(char duty);
 
 int main(void){
 
@@ -97,10 +112,10 @@ int main(void){
   F5_on=0;
   F6_on=0;
   
-  F1_shape='E';
+  F1_shape='S';
   F2_shape='S';
   F3_shape='S';
-  F4_shape='T';
+  F4_shape='S';
   
   F1_freq=1;
   F2_freq=1;
@@ -112,6 +127,17 @@ int main(void){
   F3_Hz_or_kHz='k';
   F4_Hz_or_kHz='k';
 
+/*
+  F1_dutyCycle='5';
+  F2_dutyCycle='5';
+  F3_dutyCycle='5';
+  F4_dutyCycle='5';
+*/
+
+  Pulse_on=0;
+  Pulse_freq=100;
+  Pulse_H_or_k='k';
+  Pulse_dutyCycle='5';
 
 
   while (1) {
@@ -134,9 +160,9 @@ int main(void){
 	  function_on(1);
 	  hd44780_setCursorPosition(0,4);
 	  hd44780_write_char(' ');
-	  print_shape(0,F1_shape);
+	  print_shape(1,F1_shape);
 	  hd44780_write_string(" | ");
-	  print_freq(0,F1_freq_str,F1_Hz_or_kHz);	
+	  print_freq(1,F1_freq_str,F1_Hz_or_kHz);	
 	 }
          F1_on=1-F1_on;
         }
@@ -153,9 +179,9 @@ int main(void){
 	  function_on(2);
 	  hd44780_setCursorPosition(1,4);
           hd44780_write_char(' ');
-          print_shape(1,F2_shape);
+          print_shape(2,F2_shape);
           hd44780_write_string(" | ");
-          print_freq(1,F2_freq_str,F2_Hz_or_kHz);
+          print_freq(2,F2_freq_str,F2_Hz_or_kHz);
          }
          F2_on=1-F2_on;
         }
@@ -164,21 +190,16 @@ int main(void){
        	{
 	 if(F3_on)
 	 {
-	   TIM_Cmd(TIM9,DISABLE);
-	    hd44780_setCursorPosition(2,0);
-   	    hd44780_write_string("-F3:OFF             ");
+	    TIM_Cmd(TIM9,DISABLE);
+	    hd44780_setCursorPosition(2,3);
+   	    hd44780_write_string("OFF     ");
+	    GPIO_WriteBit(GPIOC,GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3,Bit_RESET);
 	 }
 	 else
 	 {
-	
 	   TIM_Cmd(TIM9,ENABLE);
-	   hd44780_setCursorPosition(2,0);
-	   hd44780_write_char('+');
-	   hd44780_setCursorPosition(2,4);
-           hd44780_write_char(' ');
-           print_shape(2,F3_shape);
-           hd44780_write_string(" | ");
-           print_freq(2,F3_freq_str,F3_Hz_or_kHz);
+           print_shape(3,F3_shape);
+           print_freq(3,F3_freq_str,F3_Hz_or_kHz);
 	 }
 	 F3_on=1-F3_on;
 	}
@@ -187,19 +208,15 @@ int main(void){
 	 if(F4_on)
 	 {
 	   TIM_Cmd(TIM10,DISABLE);
-	   hd44780_setCursorPosition(3,0);
-           hd44780_write_string("-F4:OFF             ");
+	   hd44780_setCursorPosition(2,14);
+           hd44780_write_string("OFF   ");
+	   GPIO_WriteBit(GPIOC,GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3,Bit_RESET);
 	 }
 	 else
 	 {
 	   TIM_Cmd(TIM10,ENABLE);
-	   hd44780_setCursorPosition(3,0);
-           hd44780_write_char('+');
-           hd44780_setCursorPosition(3,4);
-           hd44780_write_char(' ');
-           print_shape(3,F4_shape);
-           hd44780_write_string(" | ");
-           print_freq(3,F4_freq_str,F4_Hz_or_kHz);
+           print_shape(4,F4_shape);
+           print_freq(4,F4_freq_str,F4_Hz_or_kHz);
 	 }
 	 F4_on=1-F4_on;
 	}
@@ -225,22 +242,44 @@ int main(void){
 	 {
 	   GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_SET);//HIGH->Schmitt->LOW->NMOS OFF
 	   hd44780_setCursorPosition(1,0);
-           hd44780_write_string("-");
+           hd44780_write_char('-');
 	 }
 	 else 
 	 {
 	   GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_RESET);//LOW->Schmitt->HIGH->NMOS OFF
 	   hd44780_setCursorPosition(1,0);
-           hd44780_write_string("+");
+           hd44780_write_char('+');
 	 }
          F6_on=1-F6_on;
         }
-
+	else if(userVal == '7')//Pulse
+        {
+         if(Pulse_on)
+         {
+           TIM_Cmd(TIM11,DISABLE);
+           hd44780_setCursorPosition(3,6);
+           hd44780_write_string("OFF           ");
+	   GPIO_WriteBit(GPIOD,GPIO_Pin_2,Bit_RESET);
+         }
+         else
+         {
+           TIM_Cmd(TIM11,ENABLE);
+	   print_shape(7,'P');
+	   hd44780_setCursorPosition(3,8);
+	   hd44780_write_char(' ');
+           print_freq(7,Pulse_freq_str,Pulse_H_or_k);
+	   print_duty(Pulse_dutyCycle);
+         }
+         Pulse_on=1-Pulse_on;
+        }
 	else if(userVal == '0')
 	{
 	 //Turn off external DACs
 	 TIM_Cmd(TIM9, DISABLE);
 	 TIM_Cmd(TIM10,DISABLE);
+
+	 //Turn off Pulse
+	 TIM_Cmd(TIM11,DISABLE);
 
 	 //Close switches - active low because of Schmidt triggers
 	 GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);
@@ -260,16 +299,17 @@ int main(void){
 	 hd44780_setCursorPosition(1,0);
 	 hd44780_write_string("-F2:OFF");
 	 hd44780_setCursorPosition(2,0);
-	 hd44780_write_string("-F3:OFF");
-	 hd44780_setCursorPosition(3,0);
-	 hd44780_write_string("-F4:OFF");
-	
+ 	 hd44780_write_string("F3:OFF     F4:OFF");
+   	 hd44780_setCursorPosition(3,0);
+    	 hd44780_write_string("Pulse:OFF");	
+
 	 F1_on=0;
 	 F2_on=0;
 	 F3_on=0;
 	 F4_on=0;
 	 F5_on=0;
 	 F6_on=0;
+	 Pulse_on=0;
 	}
 	else if(userVal=='f'||userVal=='F')
 	{
@@ -295,7 +335,7 @@ int main(void){
 	   Hz_or_kHz= usart_w_interrupt_getchar();
 	 
 	   int temp_freq_bin_iter = 0; 
-//TODO update LCD
+
 	   switch(functionNum)
 	   {
  		case '1': 
@@ -334,10 +374,19 @@ int main(void){
 		  }	          
 		  set_external_DAC_freq(functionNum,freq,Hz_or_kHz);
 		break;
+		case '7':
+		  Pulse_freq=freq;
+		  Pulse_H_or_k=Hz_or_kHz;
+		  for(;temp_freq_bin_iter<3;temp_freq_bin_iter++)
+		  { 
+		    Pulse_freq_str[temp_freq_bin_iter]=temp_freq_bin[temp_freq_bin_iter];
+		  }	          
+		  set_pulse_freq(freq,Hz_or_kHz);
+		break;
 		default:
 		break;
 	   }
-	   print_freq(((uint8_t)functionNum)-48-1, temp_freq_bin, Hz_or_kHz);//-48 to convert to function num and -1 for row number
+	      print_freq(((uint8_t)functionNum)-48, temp_freq_bin, Hz_or_kHz);//-48 to convert to function num and -1 for row number
 	
 	}
 	else if(userVal=='s' || userVal=='S')
@@ -348,7 +397,6 @@ int main(void){
 	   while(gk_USART_RX_QueueEmpty());
 	   functionShape=usart_w_interrupt_getchar();   
 
-//TODO update LCD
            switch(functionNum)
 	   {
 		case '1':
@@ -359,7 +407,7 @@ int main(void){
 	   	   F2_shape=functionShape;	
 		   set_internal_DAC_shape(functionNum,functionShape);
 		break;
-		case '3':
+	/*	case '3':
 	   	   F3_shape=functionShape;	
 		   set_external_DAC_shape(functionNum,functionShape);
 		break;
@@ -367,11 +415,19 @@ int main(void){
 	   	   F4_shape=functionShape;	
 		   set_external_DAC_shape(functionNum,functionShape);
 		break;
+	*/
 		default:
-		break;
+		return;
 	   }
-	   print_shape(((uint8_t)functionNum)-48-1, functionShape);
+	   print_shape(((uint8_t)functionNum)-48, functionShape);
 	}
+	else if(userVal=='d' || userVal=='D')
+        {
+           while(gk_USART_RX_QueueEmpty());
+           Pulse_dutyCycle=usart_w_interrupt_getchar();
+	   set_pulse_duty_cycle(Pulse_dutyCycle);   
+	   if(Pulse_on){print_duty(Pulse_dutyCycle);}
+        }
 	else
 	{	
    	   usart_w_interrupt_putchar('\n');
@@ -399,44 +455,102 @@ int main(void){
   }
 }
 
-void print_freq(uint8_t rowNum, char  freq_str[], char hz_or_k)
+void print_freq(uint8_t funcNum, char  freq_str[], char hz_or_k)
 {
-    hd44780_setCursorPosition(rowNum,10);
+    switch(funcNum)
+    {
+        case 1:
+        case 2:
+          hd44780_setCursorPosition(funcNum-1,10);
+        break;
+        case 3:
+          hd44780_setCursorPosition(2,5);
+        break;
+        case 4:
+          hd44780_setCursorPosition(2,16);
+        break;
+        case 7:
+          hd44780_setCursorPosition(3,9);
+        break;
+        default:
+        break;
+    }
+
     int fsiter=0;
     for(;fsiter<3;fsiter++)
     {
        hd44780_write_char(freq_str[fsiter]);
     }
-    hd44780_write_char(' ');
+
+    if(funcNum == 3 || funcNum == 4){
+
+       if(hz_or_k=='k'){hd44780_write_char(hz_or_k);}
+       else{hd44780_write_char('H');}
+       return;
+    }
+
     if(hz_or_k=='k'){hd44780_write_char(hz_or_k);}
     else{hd44780_write_char(' ');}
-    hd44780_write_string("Hz   ");
+    hd44780_write_string("Hz ");
 }
 
-void print_shape(uint8_t rowNum, char shape)
+void print_shape(uint8_t funcNum, char shape)
 {
-   hd44780_setCursorPosition(rowNum,5);
-   if(shape == 'S')
+   switch(funcNum)
+   {
+	case 1:
+	case 2:
+	  hd44780_setCursorPosition(funcNum-1,5);
+	break;
+	case 3:
+	  hd44780_setCursorPosition(2,3);
+	break;
+	case 4:
+	  hd44780_setCursorPosition(2,14);
+	break;
+	case 7:
+	  hd44780_setCursorPosition(3,6);
+        break;  
+	default:
+	break;
+   }
+   
+
+   if(shape == 'S'|| shape=='s')
    {
       hd44780_write_char(0x00);
       hd44780_write_char(0x01);
    }
-   if(shape == 'T')
+   else if(shape == 'T' || shape=='t')
    {
       hd44780_write_char(0x02);
       hd44780_write_char(0x03);
    }
-   if(shape == 'E')
+   else if(shape == 'E' || shape=='e')
    {
+      hd44780_write_char(0x02);
       hd44780_write_char(0x04);
-      hd44780_write_char(0x05);
    }
-   if(shape == 'R')
+   else if(shape == 'R' || shape=='r')
+   {
+      hd44780_write_char(0x05);
+      hd44780_write_char(0x03);
+   }
+   else if(shape == 'P' || shape == 'p')
    {
       hd44780_write_char(0x06);
       hd44780_write_char(0x07);
    }
 }
+
+void print_duty(char duty)
+{
+   hd44780_setCursorPosition(3,16);
+   hd44780_write_char(duty);
+   hd44780_write_char('0');
+   hd44780_write_char('%');  
+}
+
 //Timer code
 static __IO uint32_t TimingDelay ;
 

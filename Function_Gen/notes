@@ -25,7 +25,7 @@ Hardware
 1)Have external DACs with LPF to smooth
 2)switches work
 3) UART chip with clock from uC
-
+4) voltage regulator
 
 TODO - hardware
 1) remove DC from external DACs
@@ -33,4 +33,3 @@ TODO - hardware
 3) add smoothing LPF for internal DACs
 4) summing amps for Ch1 & 2 w/ DC
 5) summing amp w/DC for multitone channel
-7) voltage regulator

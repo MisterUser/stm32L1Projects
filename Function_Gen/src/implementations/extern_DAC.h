@@ -32,7 +32,8 @@ void external_DAC_setup(void);
  *  freq must be between 4Hz and 250kHz
  */
 void set_external_DAC_freq(char channel,uint16_t freq,char hz_or_khz);
-void set_external_DAC_shape(char channel,char shape);
-
+//void set_external_DAC_shape(char channel,char shape);
+void set_pulse_freq(uint16_t freq,char hz_or_khz);
+void set_pulse_duty_cycle(char duty);
 
 #endif

@@ -86,50 +86,51 @@ uint8_t TriShape2[8] = {
   0b00001,
   0b00000
 };
-uint8_t RampShape1[8] = {
-  0b00000,
-  0b00000,
-  0b00000,
-  0b00001,
-  0b00011,
-  0b00110,
-  0b01100,
-  0b11000
-};
 
-uint8_t RampShape2[8] = {
-  0b00100,
-  0b01100,
-  0b11100,
-  0b10100,
-  0b00100,
-  0b00100,
-  0b00100,
-  0b00100
+uint8_t RampShape1[8] = {
+  0b01000,
+  0b11000,
+  0b11000,
+  0b01000,
+  0b01000,
+  0b01000,
+  0b01000,
+  0b01000
 };
 
 uint8_t RevRampShape1[8] = {
-  0b00100,
-  0b00110,
+  0b00001,
+  0b00001,
+  0b00001,
+  0b00001,
+  0b00001,
+  0b00001,
+  0b00001,
+  0b00001
+};
+
+
+uint8_t SquareShape1[8] = {
   0b00111,
-  0b00101,
   0b00100,
   0b00100,
   0b00100,
-  0b00100
+  0b00100,
+  0b00100,
+  0b00100,
+  0b11100
 };
 
-uint8_t RevRampShape2[8] = {
-  0b00000,
-  0b00000,
-  0b00000,
-  0b10000,
-  0b11000,
-  0b01100,
-  0b00110,
-  0b00011
+uint8_t SquareShape2[8] = {
+  0b11100,
+  0b00100,
+  0b00100,
+  0b00100,
+  0b00100,
+  0b00100,
+  0b00100,
+  0b00111
 };
-
 
 void hd44780_init(uint8_t dispLines, uint8_t fontSize)
 {
@@ -205,19 +206,19 @@ void hd44780_init(uint8_t dispLines, uint8_t fontSize)
    create_special_char(2,TriShape1);
    create_special_char(3,TriShape2);
    create_special_char(4,RampShape1);
-   create_special_char(5,RampShape2);
-   create_special_char(6,RevRampShape1);
-   create_special_char(7,RevRampShape2);
-   __delay_cycles(2000);
+   create_special_char(5,RevRampShape1);
+   create_special_char(6,SquareShape1);
+   create_special_char(7,SquareShape2);
+   __delay_cycles(5000);
 
    hd44780_setCursorPosition(0,0);
    hd44780_write_string("-F1:OFF");
    hd44780_setCursorPosition(1,0);
    hd44780_write_string("-F2:OFF");
    hd44780_setCursorPosition(2,0);
-   hd44780_write_string("-F3:OFF");
+   hd44780_write_string("F3:OFF     F4:OFF");
    hd44780_setCursorPosition(3,0);
-   hd44780_write_string("-F4:OFF");
+   hd44780_write_string("Pulse:OFF");
 /*
    hd44780_write_char(0x00);
    hd44780_write_char(0x01);

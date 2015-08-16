@@ -2,9 +2,10 @@
 
 //------------Functions-----------------//
 const uint8_t fourBitSine_16[16]={8,11,13,14,15,14,12,10,7,4,2,1,0,1,3,5};
-const uint8_t fourBitTri_15[15]={1,3,5,7,9,11,13,15,13,11,9,7,5,3,1};
-const uint8_t fourBitEscalator_16[16]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-const uint8_t fourBitRevEscalator_16[16]={15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0};
+//const uint8_t fourBitTri_15[15]={1,3,5,7,9,11,13,15,13,11,9,7,5,3,1};
+//const uint8_t fourBitEscalator_16[16]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+//const uint8_t fourBitRevEscalator_16[16]={15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0};
+uint8_t SquarePulse_10[10]={1,1,1,1,1,0,0,0,0,0};
 
 
 //------Local variables------//
@@ -15,6 +16,8 @@ uint8_t dac1_array_current;
 const uint8_t* dac2_array_ptr;
 uint8_t lastOfarray2;
 uint8_t dac2_array_current;
+
+uint8_t pulseIter;
 
 
 GPIO_InitTypeDef GPIO_InitStructure;
@@ -108,15 +111,58 @@ void external_DAC_setup(void)
 
    TIM_TimeBaseInit(TIM10, &TIM_TimeBaseStructure);
 
-   dac2_array_ptr=&fourBitTri_15[0];
+   dac2_array_ptr=&fourBitSine_16[0];
    dac2_array_current=0;
-   lastOfarray2 = 14;
+   lastOfarray2 = 15;
 
    /* TIM enable counter */
  //  TIM_Cmd(TIM10, ENABLE);
 
    /* TIM IT enable */
    TIM_ITConfig(TIM10, TIM_IT_Update, ENABLE);
+
+
+   //--------------------------------------Pulse---------------------------//
+   //Enable Peripheral Clocks
+   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOD, ENABLE);
+
+   //Configure Pins
+   GPIO_InitTypeDef GPIO_InitStructure;
+
+   GPIO_StructInit(&GPIO_InitStructure);
+   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz ;
+   GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+   //Timer
+   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM11, ENABLE);
+
+   /* TIM IT disable */
+   TIM_ITConfig(TIM11, TIM_IT_Update, DISABLE);
+
+   /* -----------NVIC Configuration ------------*/
+   /* Enable the TIM11 global Interrupt */
+   NVIC_InitStructure.NVIC_IRQChannel = TIM11_IRQn;
+   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+   NVIC_Init(&NVIC_InitStructure);
+
+   /* Time base configuration */
+   TIM_TimeBaseStructure.TIM_Period = 10;//100kHz / array w/ 10-length = 10k
+   TIM_TimeBaseStructure.TIM_Prescaler = 15;//+1=16> 16MHz/16 = 1MHz
+   TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+
+   TIM_TimeBaseInit(TIM11, &TIM_TimeBaseStructure);
+   
+   pulseIter = 0;
+
+   /* TIM IT enable */
+   TIM_ITConfig(TIM11, TIM_IT_Update, ENABLE);
 }
 
 void set_external_DAC_freq(char channel,uint16_t freq,char hz_or_khz)
@@ -165,27 +211,36 @@ void set_external_DAC_freq(char channel,uint16_t freq,char hz_or_khz)
 
 }
 
-void set_external_DAC_shape(char channel,char shape)
+/*void set_external_DAC_shape(char channel,char shape)
 {
   if(channel=='3')
   {
      switch(shape)
      {
 	case 'S':
+	case 's':
          dac1_array_ptr=&fourBitSine_16[0];
          lastOfarray1=15;
 	break;
 	case 'E':
+	case 'e':
          dac1_array_ptr=&fourBitEscalator_16[0];
          lastOfarray1=15;
 	break;
 	case 'T':
+	case 't':
          dac1_array_ptr=&fourBitTri_15[0];
          lastOfarray1=14;
 	break;
 	case 'R':
+	case 'r':
          dac1_array_ptr=&fourBitRevEscalator_16[0];
          lastOfarray1=15;
+        break;
+	case 'P':
+	case 'p':
+         dac1_array_ptr=&fourBitSquare_10_Ch1[0];
+         lastOfarray1=9;
         break;
 	default:
 	break;
@@ -197,27 +252,88 @@ void set_external_DAC_shape(char channel,char shape)
      switch(shape)
      {
 	case 'S':
+	case 's':
          dac2_array_ptr=&fourBitSine_16[0];
          lastOfarray2=15;
 	break;
 	case 'E':
+	case 'e':
          dac2_array_ptr=&fourBitEscalator_16[0];
          lastOfarray2=15;
 	break;
 	case 'T':
+	case 't':
          dac2_array_ptr=&fourBitTri_15[0];
          lastOfarray2=14;
 	break;
 	case 'R':
+	case 'r':
          dac2_array_ptr=&fourBitRevEscalator_16[0];
          lastOfarray2=15;
         break;
+        case 'P':
+	case 'p':
+	 dac2_array_ptr=&fourBitSquare_10_Ch2[0];
+         lastOfarray2=9;
+	break;
 	default:
 	break;
      }
      dac2_array_current=0;
   }
 }
+*/
+
+void set_pulse_freq(uint16_t freq,char hz_or_khz)
+{
+  uint32_t freqInHz = freq;
+
+  TIM_Cmd(TIM11, DISABLE);
+
+  if(hz_or_khz == 'k' || hz_or_khz == 'K')
+  {
+     freqInHz=freqInHz*1000;
+  }
+
+  //add offset for interrupt (~10 @1k, 1@100, and ignore the 10s)
+  if(freqInHz>=100)
+  {
+    freqInHz=freqInHz+(freqInHz/100);//add
+  }
+
+
+  //with 8MHz and a 10-length function, can only do 800kHz (ARR=1)
+  //with 65000 highest ARR possible, lower border is 800,000 /65,500 -> ~12Hz
+
+  if(freqInHz>=15 && freqInHz<=800000)
+  {
+    TIM11->ARR=100000/freqInHz;//ARR = {1,62500}
+    TIM_Cmd(TIM11,ENABLE);
+  }
+
+}
+
+void set_pulse_duty_cycle(char duty)
+{
+
+  uint8_t fBS_ptr = 0;
+  uint8_t dutyInt = (uint8_t)duty -48;
+
+  if(dutyInt>10 || dutyInt<0){return;}
+
+  for(;fBS_ptr<dutyInt;fBS_ptr++)
+  {
+	SquarePulse_10[fBS_ptr]=1;
+  }
+
+  for(;fBS_ptr<10;fBS_ptr++)
+  {
+	SquarePulse_10[fBS_ptr]=0;
+  }
+  
+  
+}
+
 
 void TIM9_IRQHandler(void)
 {
@@ -264,4 +380,17 @@ void TIM10_IRQHandler(void)
   }
 }
 
+void TIM11_IRQHandler(void)
+{
+  static uint8_t TIM11LEDVal=0;
+  if(TIM_GetITStatus(TIM11, TIM_IT_Update) != RESET)
+  {
 
+    TIM_ClearITPendingBit(TIM11, TIM_IT_Update);
+
+    //GPIO_WriteBit(GPIOD,GPIO_Pin_2,(TIM11LEDVal)?Bit_SET:Bit_RESET);
+    //TIM11LEDVal=1-TIM11LEDVal;
+    GPIO_WriteBit(GPIOD,GPIO_Pin_2,(SquarePulse_10[pulseIter++])?Bit_SET:Bit_RESET);
+    if(pulseIter>=10){pulseIter=0;}
+  }
+}
