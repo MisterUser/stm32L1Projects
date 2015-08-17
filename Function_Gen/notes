@@ -25,10 +25,8 @@ Hardware
 2)switches work
 3) UART chip with clock from uC
 4) voltage regulator
-
-TODO - hardware
-1) remove DC from external DACs
-2) refine DC blocker for internal DACs
-3) add smoothing LPF for internal DACs
-4) summing amps for Ch1 & 2 w/ DC
-5) summing amp w/DC for multitone channel
+5) remove DC from external DACs
+6) refine DC blocker for internal DACs
+7) add smoothing LPF for internal DACs
+8) summing amps for Ch1 & 2 w/ DC
+9) summing amp w/DC for multitone channel (DC not built yet, but similar to part 8)
