@@ -37,6 +37,9 @@ void external_DAC_setup(void)
    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz ;
    GPIO_Init(ExtDAC1_PORT, &GPIO_InitStructure);
+ 
+   //write all pins low
+   //ExtDAC_resetPin = 0x0F << ExtDAC1_PortOffset;
 
    //Timer
    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE);
@@ -89,6 +92,9 @@ void external_DAC_setup(void)
    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz ;
    GPIO_Init(ExtDAC2_PORT, &GPIO_InitStructure);
 
+   //write all pins low
+   //ExtDAC_resetPin = 0x0F << ExtDAC2_PortOffset;
+
    //Timer
    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM10, ENABLE);
 
@@ -137,6 +143,10 @@ void external_DAC_setup(void)
    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz ;
    GPIO_Init(GPIOD, &GPIO_InitStructure);
 
+   //GPIO_WriteBit(GPIOD,GPIO_Pin_2,Bit_RESET);
+   //write  pin low
+   //Pulse_resetPin = Pulse_mask;
+
    //Timer
    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM11, ENABLE);
 
@@ -152,7 +162,7 @@ void external_DAC_setup(void)
    NVIC_Init(&NVIC_InitStructure);
 
    /* Time base configuration */
-   TIM_TimeBaseStructure.TIM_Period = 10;//100kHz / array w/ 10-length = 10k
+   TIM_TimeBaseStructure.TIM_Period = 99;//100kHz / array w/ 10-length = 10k
    TIM_TimeBaseStructure.TIM_Prescaler = 15;//+1=16> 16MHz/16 = 1MHz
    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -190,10 +200,8 @@ void set_external_DAC_freq(char channel,uint16_t freq,char hz_or_khz)
   }
   
   //add offset for interrupt (~10 @1k, 1@100, and ignore the 10s)
-  if(freqInHz>=100)
-  {
-    freqInHz=freqInHz+(freqInHz/100);//add 
-  }
+  //actually, for every 100, it is 7 Hz too fast, so divide freq by 15 and subtract that
+  freqInHz=freqInHz-(freqInHz/15); 
 
 
       //250k P=1,125k P=2,83.3kP=3,62.5 P=4,50k  P=5,41.67P=6,35.7 P=7,31.25  8,27.7  9,25 10
@@ -289,18 +297,12 @@ void set_pulse_freq(uint16_t freq,char hz_or_khz)
   uint32_t freqInHz = freq;
 
   TIM_Cmd(TIM11, DISABLE);
+  GPIO_WriteBit(GPIOD,GPIO_Pin_2,Bit_RESET);
 
   if(hz_or_khz == 'k' || hz_or_khz == 'K')
   {
      freqInHz=freqInHz*1000;
   }
-
-  //add offset for interrupt (~10 @1k, 1@100, and ignore the 10s)
-  if(freqInHz>=100)
-  {
-    freqInHz=freqInHz+(freqInHz/100);//add
-  }
-
 
   //with 8MHz and a 10-length function, can only do 800kHz (ARR=1)
   //with 65000 highest ARR possible, lower border is 800,000 /65,500 -> ~12Hz

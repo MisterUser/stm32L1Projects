@@ -140,6 +140,15 @@ int main(void){
   Pulse_dutyCycle='5';
 
 
+  //initialize all DAC GPIOs to LOW
+  ExtDAC_resetPin = 0x0F << ExtDAC1_PortOffset;
+  ExtDAC_resetPin = 0x0F << ExtDAC2_PortOffset;
+  Pulse_resetPin = Pulse_mask;
+
+  //switches HIGH -> OFF
+  GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);
+  GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_SET);
+
   while (1) {
 
 
@@ -191,9 +200,13 @@ int main(void){
 	 if(F3_on)
 	 {
 	    TIM_Cmd(TIM9,DISABLE);
+   	    ExtDAC_resetPin = 0x0F << ExtDAC1_PortOffset;
 	    hd44780_setCursorPosition(2,3);
    	    hd44780_write_string("OFF     ");
-	    GPIO_WriteBit(GPIOC,GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3,Bit_RESET);
+	    GPIO_WriteBit(GPIOC,GPIO_Pin_0,Bit_RESET);
+	    GPIO_WriteBit(GPIOC,GPIO_Pin_1,Bit_RESET);
+	    GPIO_WriteBit(GPIOC,GPIO_Pin_2,Bit_RESET);
+	    GPIO_WriteBit(GPIOC,GPIO_Pin_3,Bit_RESET);
 	 }
 	 else
 	 {
@@ -208,9 +221,13 @@ int main(void){
 	 if(F4_on)
 	 {
 	   TIM_Cmd(TIM10,DISABLE);
+   	   ExtDAC_resetPin = 0x0F << ExtDAC2_PortOffset;
 	   hd44780_setCursorPosition(2,14);
            hd44780_write_string("OFF   ");
-	   GPIO_WriteBit(GPIOC,GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3,Bit_RESET);
+	   GPIO_WriteBit(GPIOC,GPIO_Pin_6,Bit_RESET);
+	   GPIO_WriteBit(GPIOC,GPIO_Pin_7,Bit_RESET);
+	   GPIO_WriteBit(GPIOC,GPIO_Pin_8,Bit_RESET);
+	   GPIO_WriteBit(GPIOC,GPIO_Pin_9,Bit_RESET);
 	 }
 	 else
 	 {
@@ -259,7 +276,7 @@ int main(void){
            TIM_Cmd(TIM11,DISABLE);
            hd44780_setCursorPosition(3,6);
            hd44780_write_string("OFF           ");
-	   GPIO_WriteBit(GPIOD,GPIO_Pin_2,Bit_RESET);
+	   Pulse_resetPin = Pulse_mask;
          }
          else
          {
@@ -277,9 +294,13 @@ int main(void){
 	 //Turn off external DACs
 	 TIM_Cmd(TIM9, DISABLE);
 	 TIM_Cmd(TIM10,DISABLE);
+	 //write all external DAC pins low
+   	 ExtDAC_resetPin = 0x0F << ExtDAC1_PortOffset;
+   	 ExtDAC_resetPin = 0x0F << ExtDAC2_PortOffset;
 
 	 //Turn off Pulse
 	 TIM_Cmd(TIM11,DISABLE);
+	 Pulse_resetPin = Pulse_mask;
 
 	 //Close switches - active low because of Schmidt triggers
 	 GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);

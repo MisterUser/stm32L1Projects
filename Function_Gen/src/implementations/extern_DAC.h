@@ -26,6 +26,10 @@
 #define ExtDAC2_Pin4_MSB GPIO_Pin_9
 #define ExtDAC2_PortOffset 6
 
+#define Pulse_setPin	GPIOD->BSRRL
+#define Pulse_resetPin  GPIOD->BSRRH
+#define Pulse_mask	0x0004 
+
 void external_DAC_setup(void);
 /*
  *set_internal_DAC_freq

@@ -5,16 +5,15 @@ Software
 4)LCD functional
 5)Change Frequencies (not perfectly for Ch3&4 because of interrupt delay)
 6)change waveform shape
-7)measure interrupt time of TIM9&10 to add into account (~9.4us)
-8)update LCD
+7)update LCD
    -when function is turned on or off
    -for shape change
    -for freq change
    -for switches
+8)square waves with varying duty cycle
 
-TODO - software
-5)square waves with varying duty cycle
-
+# NOT NECESSARY to measure interrupt time of TIM9&10 to add into account (~9.4us)
+  - timer does not wait for interrupt 
 
 
 
