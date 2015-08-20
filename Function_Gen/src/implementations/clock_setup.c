@@ -42,21 +42,6 @@ void clock_setup()
   while(RCC_GetFlagStatus(RCC_FLAG_MSIRDY) != RESET ){}; //! Wait until off
 
 
-  //MCO for UART converter 12Mhz?
-  // It works!
-  GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_MCO);
-  
-  GPIO_InitTypeDef GPIO_InitStructure;
-  GPIO_StructInit(&GPIO_InitStructure);
-
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz ;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-  RCC_MCOConfig(RCC_MCOSource_PLLCLK,RCC_MCODiv_1); //12MHz
 
 
   //-----------------------Peripheral Clock Sources----------------------//
@@ -85,6 +70,12 @@ void clock_setup()
   //RCC_ClocksTypeDef RCC_ClockFreq;
   //RCC_GetClocksFreq(&RCC_ClockFreq);
 
+
+
+
+
+
+
   //----------------------------SYSTICK-------------------------//
   //Configure SysTick Timer (in core_cm4.h)
   //Set System Clock to interrupt every ms. HCLK/8 = 2MHz. Each tick is 500ns
@@ -92,4 +83,32 @@ void clock_setup()
   //1ms=1000us, each tick = .5us, so need 2000 ticks
   if(SysTick_Config(2000)) //This is used to wait for UART (human) input, so c
         while (1); //If fails, hang in while loop
+
+
+
+
+
+
+
+  //------------------------MCO--------------------------------//
+  //Enable Peripheral Clocks
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+
+  //MCO for UART converter 12Mhz?
+  // It works!
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_MCO);
+  
+  GPIO_InitTypeDef GPIO_InitStructure;
+  GPIO_StructInit(&GPIO_InitStructure);
+
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+ 
+  GPIO_WriteBit(GPIOA,GPIO_Pin_8,Bit_RESET);
+
+  RCC_MCOConfig(RCC_MCOSource_PLLCLK,RCC_MCODiv_1); //12MHz
 }

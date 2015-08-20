@@ -5,15 +5,15 @@ ELF=$(notdir $(CURDIR)).elf
 
 # Tool path
 
-TOOLROOT=/home/g/workspace/stm32_projects/Tools_and_Libs/GNU_sourcery_toolchain_arm_05_2014/bin
+TOOLROOT=/home/g/Workspace/stm32_projects/Tools_and_Libs/GNU_sourcery_toolchain_arm_05_2014/bin
 
 # Library path
 
-LIBROOT=/home/g/workspace/stm32_projects/Tools_and_Libs/STM32L1xx_StdPeriph_Lib_V1.2.0
+LIBROOT=/home/g/Workspace/stm32_projects/Tools_and_Libs/STM32L1xx_StdPeriph_Lib_V1.2.0
 
 # Loader and System files path
 
-COMPTOOLS=/home/g/workspace/stm32_projects/Tools_and_Libs/compile_files
+COMPTOOLS=/home/g/Workspace/stm32_projects/Tools_and_Libs/compile_files
 
 # Tools
 

@@ -72,7 +72,7 @@ int main(void){
   clock_setup(); //clocks now at 16MHz (SYS,HCLK(AHP),PCLK1(APB1),PCLK2(APB2))
 
   //Enable Peripheral Clocks
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); 
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB | RCC_AHBPeriph_GPIOA, ENABLE); 
   
   //Configure Pins
   GPIO_InitTypeDef GPIO_InitStructure;
