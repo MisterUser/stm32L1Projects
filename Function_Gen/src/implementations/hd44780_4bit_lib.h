@@ -82,6 +82,12 @@
 
 void hd44780_init(uint8_t dispLines, uint8_t fontSize);
 
+void lcd_setup(uint8_t dispLines, uint8_t fontSize);
+void lcd_reset_screen(void);
+
+
+void create_special_char(uint8_t location, uint8_t charmap[]);
+
 /*
  * Send the HD44780 a command. Commands are #define'd above (HD44780_CMD_*).
  * Note: There is no need to check the busy flag before sending commands,

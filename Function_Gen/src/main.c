@@ -13,8 +13,8 @@ uint8_t F1_on;
 uint8_t F2_on;
 uint8_t F3_on;
 uint8_t F4_on;
-uint8_t F5_on;
-uint8_t F6_on;
+//uint8_t F5_on;
+//uint8_t F6_on;
 
 char F1_shape;
 char F2_shape;
@@ -42,15 +42,7 @@ char Pulse_freq_str[3]="001";
 char Pulse_H_or_k;
 char Pulse_dutyCycle;
 
-/*
-char F1_dutyCycle;
-char F2_dutyCycle;
-char F3_dutyCycle;
-char F4_dutyCycle;
-*/
-
 static int ledval = 0;
-
 
   //USART
 volatile char userVal;
@@ -58,7 +50,6 @@ volatile char functionNum;
 volatile uint16_t freq;
 volatile char Hz_or_kHz; 
 volatile char functionShape;
-//volatile char dutyCycle;
 
 
 //------------Declarations----------//
@@ -85,6 +76,7 @@ int main(void){
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
+/* Not needed in implementation
   //Control pins for DAC Ch1&Ch2 switches
   GPIO_StructInit(&GPIO_InitStructure);
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
@@ -93,6 +85,7 @@ int main(void){
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
+*/
 
   usart_int_and_q_init();
   
@@ -109,8 +102,8 @@ int main(void){
   F2_on=0;
   F3_on=0;
   F4_on=0;
-  F5_on=0;
-  F6_on=0;
+  //F5_on=0;
+  //F6_on=0;
   
   F1_shape='S';
   F2_shape='S';
@@ -127,13 +120,6 @@ int main(void){
   F3_Hz_or_kHz='k';
   F4_Hz_or_kHz='k';
 
-/*
-  F1_dutyCycle='5';
-  F2_dutyCycle='5';
-  F3_dutyCycle='5';
-  F4_dutyCycle='5';
-*/
-
   Pulse_on=0;
   Pulse_freq=100;
   Pulse_H_or_k='k';
@@ -145,9 +131,11 @@ int main(void){
   ExtDAC_resetPin = 0x0F << ExtDAC2_PortOffset;
   Pulse_resetPin = Pulse_mask;
 
+/*
   //switches HIGH -> OFF
   GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);
   GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_SET);
+*/
 
   while (1) {
 
@@ -161,14 +149,14 @@ int main(void){
 	 if(F1_on)//already on -> disable it
 	 {
 	  function_off(1);
-	  hd44780_setCursorPosition(0,4);
-          hd44780_write_string("OFF             ");
+	  hd44780_setCursorPosition(0,0);
+          hd44780_write_string("-F1:OFF             ");
 	 }
 	 else
 	 {
 	  function_on(1);
-	  hd44780_setCursorPosition(0,4);
-	  hd44780_write_char(' ');
+	  hd44780_setCursorPosition(0,0);
+	  hd44780_write_string("+F1: ");
 	  print_shape(1,F1_shape);
 	  hd44780_write_string(" | ");
 	  print_freq(1,F1_freq_str,F1_Hz_or_kHz);	
@@ -180,14 +168,14 @@ int main(void){
          if(F2_on)//already on -> disable it
          {
 	  function_off(2);
-	  hd44780_setCursorPosition(1,4);
-   	  hd44780_write_string("OFF             ");
+	  hd44780_setCursorPosition(1,0);
+   	  hd44780_write_string("-F2:OFF             ");
          }
          else
          {
 	  function_on(2);
-	  hd44780_setCursorPosition(1,4);
-          hd44780_write_char(' ');
+	  hd44780_setCursorPosition(1,0);
+          hd44780_write_string("+F2: ");
           print_shape(2,F2_shape);
           hd44780_write_string(" | ");
           print_freq(2,F2_freq_str,F2_Hz_or_kHz);
@@ -237,6 +225,7 @@ int main(void){
 	 }
 	 F4_on=1-F4_on;
 	}
+/*
 	else if(userVal == '5')//switch for Ch1 
 	{
 	 if(F5_on)//already ON, turn it off
@@ -269,7 +258,8 @@ int main(void){
 	 }
          F6_on=1-F6_on;
         }
-	else if(userVal == '7')//Pulse
+*/
+	else if(userVal == 'p'||userVal == 'P')//Pulse
         {
          if(Pulse_on)
          {
@@ -302,34 +292,24 @@ int main(void){
 	 TIM_Cmd(TIM11,DISABLE);
 	 Pulse_resetPin = Pulse_mask;
 
+/*
 	 //Close switches - active low because of Schmidt triggers
 	 GPIO_WriteBit(GPIOA,GPIO_Pin_2,Bit_SET);
 	 GPIO_WriteBit(GPIOA,GPIO_Pin_3,Bit_SET);
+*/
 
 	 //Turn off internal DAC
 	 function_off(1);
 	 function_off(2); 
 
-	 hd44780_send_command(HD44780_CMD_RETURN_HOME);
-	 hd44780_send_command(HD44780_CMD_CLEAR_DISPLAY);
-	
-	 Delay(30); 
-
-	 hd44780_setCursorPosition(0,0);
-	 hd44780_write_string("-F1:OFF");
-	 hd44780_setCursorPosition(1,0);
-	 hd44780_write_string("-F2:OFF");
-	 hd44780_setCursorPosition(2,0);
- 	 hd44780_write_string("F3:OFF     F4:OFF");
-   	 hd44780_setCursorPosition(3,0);
-    	 hd44780_write_string("Pulse:OFF");	
+	 lcd_reset_screen();
 
 	 F1_on=0;
 	 F2_on=0;
 	 F3_on=0;
 	 F4_on=0;
-	 F5_on=0;
-	 F6_on=0;
+	 //F5_on=0;
+	 //F6_on=0;
 	 Pulse_on=0;
 	}
 	else if(userVal=='f'||userVal=='F')
@@ -395,7 +375,8 @@ int main(void){
 		  }	          
 		  set_external_DAC_freq(functionNum,freq,Hz_or_kHz);
 		break;
-		case '7':
+		case 'p':
+	  	case 'P':
 		  Pulse_freq=freq;
 		  Pulse_H_or_k=Hz_or_kHz;
 		  for(;temp_freq_bin_iter<3;temp_freq_bin_iter++)
@@ -449,6 +430,11 @@ int main(void){
 	   set_pulse_duty_cycle(Pulse_dutyCycle);   
 	   if(Pulse_on){print_duty(Pulse_dutyCycle);}
         }
+	else if(userVal=='l' || userVal=='L')//use this option if screen powers down
+	{
+	   lcd_setup(N_2LINE,FONT_8);
+	   lcd_reset_screen();
+	}
 	else
 	{	
    	   usart_w_interrupt_putchar('\n');
@@ -459,8 +445,6 @@ int main(void){
    	   usart_w_interrupt_putchar(':');
    	   usart_w_interrupt_putchar(userVal);
    	   usart_w_interrupt_putchar('\n');
-   
-   	   //hd44780_write_char(userVal);
 	}
     }
     else

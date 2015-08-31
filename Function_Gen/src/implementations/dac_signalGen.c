@@ -131,7 +131,7 @@ void DAC_signalGen_init(void)
 
    DMA_InitTypeDef            DMA_InitStructure;
    DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR8R1_Address;
-   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Escalator8bit;
+   DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&Sine8Bit_32;
    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
    DMA_InitStructure.DMA_BufferSize = 32;
    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;

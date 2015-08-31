@@ -134,7 +134,6 @@ uint8_t SquareShape2[8] = {
 
 void hd44780_init(uint8_t dispLines, uint8_t fontSize)
 {
-   uint8_t fsByte;
    
    //Enable Peripheral Clocks
    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
@@ -191,16 +190,24 @@ void hd44780_init(uint8_t dispLines, uint8_t fontSize)
    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz ;
    GPIO_Init(GPIOB, &GPIO_InitStructure);    
 
+   lcd_setup(dispLines,fontSize);
+
+   //turn it on and print home screen
+   hd44780_send_command(HD44780_CMD_DISPLAY_ON);
+
+   lcd_reset_screen();
+}
+
+void lcd_setup(uint8_t dispLines, uint8_t fontSize)
+{
+   uint8_t fsByte;
+
+   //set up LCD
    fsByte = (FUNCTION_SET | DL_4BITS | dispLines | fontSize);
 
    hd44780_send_command(fsByte);
 
-   hd44780_send_command(HD44780_CMD_DISPLAY_ON);
-   hd44780_send_command(HD44780_CMD_RETURN_HOME);
-   hd44780_send_command(HD44780_CMD_CLEAR_DISPLAY);
-
-   __delay_cycles(1500);
-
+   //create special chars
    create_special_char(0,SineShape1);
    create_special_char(1,SineShape2);
    create_special_char(2,TriShape1);
@@ -209,7 +216,16 @@ void hd44780_init(uint8_t dispLines, uint8_t fontSize)
    create_special_char(5,RevRampShape1);
    create_special_char(6,SquareShape1);
    create_special_char(7,SquareShape2);
+
    __delay_cycles(5000);
+}
+
+void lcd_reset_screen(void)
+{
+   hd44780_send_command(HD44780_CMD_RETURN_HOME);
+   hd44780_send_command(HD44780_CMD_CLEAR_DISPLAY);
+
+   __delay_cycles(1500);
 
    hd44780_setCursorPosition(0,0);
    hd44780_write_string("-F1:OFF");
@@ -219,16 +235,7 @@ void hd44780_init(uint8_t dispLines, uint8_t fontSize)
    hd44780_write_string("F3:OFF     F4:OFF");
    hd44780_setCursorPosition(3,0);
    hd44780_write_string("Pulse:OFF");
-/*
-   hd44780_write_char(0x00);
-   hd44780_write_char(0x01);
-   hd44780_write_char(0x02);
-   hd44780_write_char(0x03);
-   hd44780_write_char(0x04);
-   hd44780_write_char(0x05);
-   hd44780_write_char(0x06);
-   hd44780_write_char(0x07);
-*/
+
 }
 
 /*
@@ -334,3 +341,5 @@ void __delay_cycles(int cycles)
         j++;
     }
 }
+
+
